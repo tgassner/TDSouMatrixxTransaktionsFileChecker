@@ -1,4 +1,4 @@
-namespace Transparentdesign.SouMatrixxTransaktionsChecker
+namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 {
     internal static class Program
     {

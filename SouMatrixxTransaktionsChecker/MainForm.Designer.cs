@@ -1,4 +1,4 @@
-﻿namespace Transparentdesign.SouMatrixxTransaktionsChecker
+﻿namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 {
     partial class MainForm
     {
@@ -48,9 +48,10 @@
             // 
             // buttonFindSuspiciousTransactions
             // 
-            buttonFindSuspiciousTransactions.Location = new Point(12, 41);
+            buttonFindSuspiciousTransactions.Location = new Point(14, 55);
+            buttonFindSuspiciousTransactions.Margin = new Padding(3, 4, 3, 4);
             buttonFindSuspiciousTransactions.Name = "buttonFindSuspiciousTransactions";
-            buttonFindSuspiciousTransactions.Size = new Size(386, 39);
+            buttonFindSuspiciousTransactions.Size = new Size(441, 52);
             buttonFindSuspiciousTransactions.TabIndex = 0;
             buttonFindSuspiciousTransactions.Text = "### Find Suspicious Transactions ###";
             buttonFindSuspiciousTransactions.UseVisualStyleBackColor = true;
@@ -58,17 +59,19 @@
             // 
             // textBoxTransactionDirectory
             // 
-            textBoxTransactionDirectory.Location = new Point(143, 12);
+            textBoxTransactionDirectory.Location = new Point(163, 16);
+            textBoxTransactionDirectory.Margin = new Padding(3, 4, 3, 4);
             textBoxTransactionDirectory.Name = "textBoxTransactionDirectory";
-            textBoxTransactionDirectory.Size = new Size(491, 23);
+            textBoxTransactionDirectory.Size = new Size(561, 27);
             textBoxTransactionDirectory.TabIndex = 1;
             textBoxTransactionDirectory.TextChanged += textBoxTransactionDirectory_TextChanged;
             // 
             // listViewOldFiles
             // 
-            listViewOldFiles.Location = new Point(12, 101);
+            listViewOldFiles.Location = new Point(14, 135);
+            listViewOldFiles.Margin = new Padding(3, 4, 3, 4);
             listViewOldFiles.Name = "listViewOldFiles";
-            listViewOldFiles.Size = new Size(1240, 202);
+            listViewOldFiles.Size = new Size(1417, 268);
             listViewOldFiles.TabIndex = 2;
             listViewOldFiles.UseCompatibleStateImageBehavior = false;
             listViewOldFiles.View = View.Details;
@@ -76,9 +79,10 @@
             // 
             // buttonFindTransactionDirectory
             // 
-            buttonFindTransactionDirectory.Location = new Point(640, 12);
+            buttonFindTransactionDirectory.Location = new Point(731, 16);
+            buttonFindTransactionDirectory.Margin = new Padding(3, 4, 3, 4);
             buttonFindTransactionDirectory.Name = "buttonFindTransactionDirectory";
-            buttonFindTransactionDirectory.Size = new Size(25, 23);
+            buttonFindTransactionDirectory.Size = new Size(29, 31);
             buttonFindTransactionDirectory.TabIndex = 3;
             buttonFindTransactionDirectory.Text = "…";
             toolTipChooseDirectory.SetToolTip(buttonFindTransactionDirectory, "choose Directory…");
@@ -87,36 +91,38 @@
             // 
             // textBoxLog
             // 
-            textBoxLog.Location = new Point(12, 563);
+            textBoxLog.Location = new Point(14, 751);
+            textBoxLog.Margin = new Padding(3, 4, 3, 4);
             textBoxLog.Multiline = true;
             textBoxLog.Name = "textBoxLog";
             textBoxLog.ReadOnly = true;
-            textBoxLog.Size = new Size(1240, 186);
+            textBoxLog.Size = new Size(1417, 247);
             textBoxLog.TabIndex = 4;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(12, 83);
+            label1.Location = new Point(14, 111);
             label1.Name = "label1";
-            label1.Size = new Size(65, 15);
+            label1.Size = new Size(82, 20);
             label1.TabIndex = 5;
             label1.Text = "Older Files:";
             // 
             // labelOlderNullFilledFiles
             // 
             labelOlderNullFilledFiles.AutoSize = true;
-            labelOlderNullFilledFiles.Location = new Point(12, 346);
+            labelOlderNullFilledFiles.Location = new Point(14, 461);
             labelOlderNullFilledFiles.Name = "labelOlderNullFilledFiles";
-            labelOlderNullFilledFiles.Size = new Size(177, 15);
+            labelOlderNullFilledFiles.Size = new Size(224, 20);
             labelOlderNullFilledFiles.TabIndex = 6;
             labelOlderNullFilledFiles.Text = "Older NULL  filled or empty Files";
             // 
             // listViewOldFilesFilledWithNulls
             // 
-            listViewOldFilesFilledWithNulls.Location = new Point(12, 364);
+            listViewOldFilesFilledWithNulls.Location = new Point(14, 485);
+            listViewOldFilesFilledWithNulls.Margin = new Padding(3, 4, 3, 4);
             listViewOldFilesFilledWithNulls.Name = "listViewOldFilesFilledWithNulls";
-            listViewOldFilesFilledWithNulls.Size = new Size(1240, 140);
+            listViewOldFilesFilledWithNulls.Size = new Size(1417, 185);
             listViewOldFilesFilledWithNulls.TabIndex = 7;
             listViewOldFilesFilledWithNulls.UseCompatibleStateImageBehavior = false;
             listViewOldFilesFilledWithNulls.View = View.Details;
@@ -125,26 +131,27 @@
             // labelLog
             // 
             labelLog.AutoSize = true;
-            labelLog.Location = new Point(12, 545);
+            labelLog.Location = new Point(14, 727);
             labelLog.Name = "labelLog";
-            labelLog.Size = new Size(30, 15);
+            labelLog.Size = new Size(37, 20);
             labelLog.TabIndex = 8;
             labelLog.Text = "Log:";
             // 
             // labelTransactionFilesRoot
             // 
             labelTransactionFilesRoot.AutoSize = true;
-            labelTransactionFilesRoot.Location = new Point(12, 15);
+            labelTransactionFilesRoot.Location = new Point(14, 20);
             labelTransactionFilesRoot.Name = "labelTransactionFilesRoot";
-            labelTransactionFilesRoot.Size = new Size(125, 15);
+            labelTransactionFilesRoot.Size = new Size(156, 20);
             labelTransactionFilesRoot.TabIndex = 9;
             labelTransactionFilesRoot.Text = "Transaction Files Root:";
             // 
             // buttonDeleteSelectedOldFiles
             // 
-            buttonDeleteSelectedOldFiles.Location = new Point(12, 309);
+            buttonDeleteSelectedOldFiles.Location = new Point(14, 412);
+            buttonDeleteSelectedOldFiles.Margin = new Padding(3, 4, 3, 4);
             buttonDeleteSelectedOldFiles.Name = "buttonDeleteSelectedOldFiles";
-            buttonDeleteSelectedOldFiles.Size = new Size(250, 23);
+            buttonDeleteSelectedOldFiles.Size = new Size(286, 31);
             buttonDeleteSelectedOldFiles.TabIndex = 10;
             buttonDeleteSelectedOldFiles.Text = "DELETE selected Old Files";
             buttonDeleteSelectedOldFiles.UseVisualStyleBackColor = true;
@@ -153,9 +160,10 @@
             // 
             // buttonDeleteSelectedOldNULLFiles
             // 
-            buttonDeleteSelectedOldNULLFiles.Location = new Point(12, 510);
+            buttonDeleteSelectedOldNULLFiles.Location = new Point(14, 680);
+            buttonDeleteSelectedOldNULLFiles.Margin = new Padding(3, 4, 3, 4);
             buttonDeleteSelectedOldNULLFiles.Name = "buttonDeleteSelectedOldNULLFiles";
-            buttonDeleteSelectedOldNULLFiles.Size = new Size(250, 23);
+            buttonDeleteSelectedOldNULLFiles.Size = new Size(286, 31);
             buttonDeleteSelectedOldNULLFiles.TabIndex = 11;
             buttonDeleteSelectedOldNULLFiles.Text = "DELETE seleted Old NULL Files";
             buttonDeleteSelectedOldNULLFiles.UseVisualStyleBackColor = true;
@@ -164,9 +172,9 @@
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1264, 761);
+            ClientSize = new Size(1445, 1015);
             Controls.Add(buttonDeleteSelectedOldNULLFiles);
             Controls.Add(buttonDeleteSelectedOldFiles);
             Controls.Add(labelTransactionFilesRoot);
@@ -180,8 +188,9 @@
             Controls.Add(textBoxTransactionDirectory);
             Controls.Add(buttonFindSuspiciousTransactions);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(3, 4, 3, 4);
             Name = "MainForm";
-            Text = "Sou.Matrixx Transaction Checker";
+            Text = "Transparentdesign Sou.Matrixx Transaction File Checker";
             Load += MainForm_Load;
             ResumeLayout(false);
             PerformLayout();

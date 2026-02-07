@@ -1,8 +1,7 @@
-using Microsoft.VisualBasic.FileIO;
 using System.Diagnostics;
 using System.Security;
 
-namespace Transparentdesign.SouMatrixxTransaktionsChecker
+namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 {
     public partial class MainForm : Form
     {
@@ -280,24 +279,59 @@ namespace Transparentdesign.SouMatrixxTransaktionsChecker
 
         private void buttonDeleteSelectedOldFiles_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in listViewOldFiles.SelectedItems)
-            {
-                logToTextBox(item.ToString());
-                if (item != null && item.Tag != null && new FileInfo(item.Tag.ToString()).Exists)
-                {
-                    logToTextBox(item.Tag.ToString());
-                }
-            }
+            IterateThroughSelectedAndDelete(listViewOldFiles.SelectedItems);
         }
 
         private void buttonDeleteSelectedOldNULLFiles_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in listViewOldFilesFilledWithNulls.SelectedItems)
+            IterateThroughSelectedAndDelete(listViewOldFilesFilledWithNulls.SelectedItems);
+        }
+
+        private void IterateThroughSelectedAndDelete(ListView.SelectedListViewItemCollection selectedItems)
+        {
+            foreach (ListViewItem item in selectedItems)
             {
                 if (item != null && item.Tag != null && new FileInfo(item.Tag.ToString()).Exists)
                 {
-                    logToTextBox(item.Tag.ToString());
+                    DeleteSelectedFilesAndLog(item.Tag.ToString());
                 }
+            }
+        }
+
+        private void DeleteSelectedFilesAndLog(string filePath)
+        {
+            try
+            {
+                File.Delete(filePath);
+                logToTextBox(filePath + " deleted.");
+            }
+            catch (ArgumentNullException ex)
+            {
+                logToTextBox(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                logToTextBox(ex.Message);
+            }
+            catch (PathTooLongException ex)
+            {
+                logToTextBox(ex.Message);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                logToTextBox(ex.Message);
+            }
+            catch (IOException ex)
+            {
+                logToTextBox(ex.Message);
+            }
+            catch (NotSupportedException ex)
+            {
+                logToTextBox(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                logToTextBox(ex.Message);
             }
         }
     }
