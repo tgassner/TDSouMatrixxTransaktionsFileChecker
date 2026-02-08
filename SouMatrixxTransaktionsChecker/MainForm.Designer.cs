@@ -44,6 +44,8 @@
             toolTipChooseDirectory = new ToolTip(components);
             buttonDeleteSelectedOldFiles = new Button();
             buttonDeleteSelectedOldNULLFiles = new Button();
+            buttonCancelSearch = new Button();
+            progressBarSearch = new ProgressBar();
             SuspendLayout();
             // 
             // buttonFindSuspiciousTransactions
@@ -59,7 +61,7 @@
             // 
             // textBoxTransactionDirectory
             // 
-            textBoxTransactionDirectory.Location = new Point(163, 16);
+            textBoxTransactionDirectory.Location = new Point(176, 17);
             textBoxTransactionDirectory.Margin = new Padding(3, 4, 3, 4);
             textBoxTransactionDirectory.Name = "textBoxTransactionDirectory";
             textBoxTransactionDirectory.Size = new Size(561, 27);
@@ -79,7 +81,7 @@
             // 
             // buttonFindTransactionDirectory
             // 
-            buttonFindTransactionDirectory.Location = new Point(731, 16);
+            buttonFindTransactionDirectory.Location = new Point(743, 15);
             buttonFindTransactionDirectory.Margin = new Padding(3, 4, 3, 4);
             buttonFindTransactionDirectory.Name = "buttonFindTransactionDirectory";
             buttonFindTransactionDirectory.Size = new Size(29, 31);
@@ -170,11 +172,31 @@
             buttonDeleteSelectedOldNULLFiles.EnabledChanged += buttonDeleteSelectedOldNULLFiles_EnabledChanged;
             buttonDeleteSelectedOldNULLFiles.Click += buttonDeleteSelectedOldNULLFiles_Click;
             // 
+            // buttonCancelSearch
+            // 
+            buttonCancelSearch.Enabled = false;
+            buttonCancelSearch.Location = new Point(461, 55);
+            buttonCancelSearch.Name = "buttonCancelSearch";
+            buttonCancelSearch.Size = new Size(197, 52);
+            buttonCancelSearch.TabIndex = 12;
+            buttonCancelSearch.Text = "Cancel Search";
+            buttonCancelSearch.UseVisualStyleBackColor = true;
+            buttonCancelSearch.Click += buttonCancelSearch_Click;
+            // 
+            // progressBarSearch
+            // 
+            progressBarSearch.Location = new Point(664, 55);
+            progressBarSearch.Name = "progressBarSearch";
+            progressBarSearch.Size = new Size(304, 52);
+            progressBarSearch.TabIndex = 13;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1445, 1015);
+            Controls.Add(progressBarSearch);
+            Controls.Add(buttonCancelSearch);
             Controls.Add(buttonDeleteSelectedOldNULLFiles);
             Controls.Add(buttonDeleteSelectedOldFiles);
             Controls.Add(labelTransactionFilesRoot);
@@ -212,5 +234,7 @@
         private ToolTip toolTipChooseDirectory;
         private Button buttonDeleteSelectedOldFiles;
         private Button buttonDeleteSelectedOldNULLFiles;
+        private Button buttonCancelSearch;
+        private ProgressBar progressBarSearch;
     }
 }

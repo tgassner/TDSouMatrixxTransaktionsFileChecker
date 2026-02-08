@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Security;
+using System.Windows.Forms;
 
 namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 {
@@ -8,6 +9,126 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private readonly Color lightGreen = Color.FromArgb(255, 150, 220, 150);
         private readonly Color lightRed = Color.FromArgb(255, 240, 150, 150);
         private readonly Color lightYellow = Color.FromArgb(255, 255, 255, 180);
+
+        public record FileScanProgress(string Message, int FilesProcessed);
+
+        private CancellationTokenSource? _cts;
+
+
+        private void buttonCancelSearch_Click(object sender, EventArgs e)
+        {
+            _cts?.Cancel();
+        }
+       
+        private async void buttonFindSuspiciousTransactions_Click(object sender, EventArgs e)
+        {
+            this.listViewOldFiles.Items.Clear();
+            this.listViewOldFilesFilledWithNulls.Items.Clear();
+            string transactionDirectory = textBoxTransactionDirectory.Text;
+            if (String.IsNullOrWhiteSpace(transactionDirectory) || !new DirectoryInfo(transactionDirectory).Exists)
+            {
+                MessageBox.Show("The path \"" + transactionDirectory + "\" is not valid!");
+                return;
+            }
+            Properties.Settings.Default.transactionDirectory = transactionDirectory;
+            Properties.Settings.Default.Save();
+
+            buttonFindSuspiciousTransactions.Enabled = false;
+            buttonCancelSearch.Enabled = true;
+
+            _cts = new CancellationTokenSource();
+
+            var progress = new Progress<FileScanProgress>(p =>
+            {
+                //logToTextBox(p.Message);
+                //logToTextBox(p.FilesProcessed.ToString());
+                //progressBarSearch.Value = p.FilesProcessed; // optional
+            });
+
+            try
+            {
+                await Task.Run(() =>
+                    ScanAsync(textBoxTransactionDirectory.Text, progress, _cts.Token));
+            }
+            catch (OperationCanceledException)
+            {
+                logToTextBox("aborted ");
+            }
+            finally
+            {
+                buttonFindSuspiciousTransactions.Enabled = true;
+                buttonCancelSearch.Enabled = false;
+            }
+        }
+
+        private async Task ScanAsync(
+            string rootPath,
+            IProgress<FileScanProgress> progress,
+            CancellationToken cancellationToken)
+        {
+            int count = 0;
+            IList<ListViewItem> oldFileItems = new List<ListViewItem>();
+            IList<ListViewItem> nullFileItems = new List<ListViewItem>();
+
+            foreach (string file in Directory.EnumerateFiles(rootPath, "*", SearchOption.AllDirectories))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    FileInfo fileInfo = new FileInfo(file);
+                    DateTime creationTime = fileInfo.CreationTime;
+                    int ageInHours = (int)DateTime.Now.Subtract(creationTime).TotalHours;
+                    int ageInDays = (int)DateTime.Now.Subtract(creationTime).TotalDays;
+
+                    if (ageInHours > 50)
+                    {
+                        ListViewItem itemOldFile = new ListViewItem(new string[] {
+                            fileInfo.Name,
+                            fileInfo.Length.ToString(),
+                            ageInDays.ToString(),
+                            fileInfo.CreationTime.ToShortDateString(),
+                            fileInfo.DirectoryName ?? ""});
+                        itemOldFile.Tag = fileInfo.FullName;
+                        oldFileItems.Add(itemOldFile);
+
+                        // Do nothing with the data except read it.
+                        byte[] data = File.ReadAllBytes(file);
+                        bool otherThanNull = false;
+                        foreach (byte b in data)
+                        {
+                            if (b != 0)
+                            {
+                                otherThanNull = true;
+                                break;
+                            }
+                        }
+                        if (!otherThanNull)
+                        {
+                            ListViewItem itemNullFile = new ListViewItem(new string[] {
+                                fileInfo.Name,
+                                fileInfo.Length.ToString(),
+                                ageInDays.ToString(),
+                                fileInfo.CreationTime.ToShortDateString(),
+                                fileInfo.DirectoryName ?? ""});
+                            itemNullFile.Tag = fileInfo.FullName;
+                            nullFileItems.Add(itemNullFile);
+                        }
+                    }
+                }
+                catch (FileNotFoundException) { }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+                catch (SecurityException) { }
+
+                progress?.Report(new FileScanProgress(
+                    $"Verarbeite: {Path.GetFileName(file)}",
+                    count));
+            }
+            listViewOldFiles.Items.AddRange(oldFileItems.ToArray());
+            listViewOldFilesFilledWithNulls.Items.AddRange(nullFileItems.ToArray());
+        }
+
 
         public MainForm()
         {
@@ -71,178 +192,9 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             listViewOldFilesFilledWithNulls.Columns.Add("Path", 350);
         }
 
-        private void buttonFindSuspiciousTransactions_Click(object sender, EventArgs e)
-        {
-            this.listViewOldFiles.Items.Clear();
-            this.listViewOldFilesFilledWithNulls.Items.Clear();
-            string transactionDirectory = textBoxTransactionDirectory.Text;
-            if (String.IsNullOrWhiteSpace(transactionDirectory) || !new DirectoryInfo(transactionDirectory).Exists)
-            {
-                MessageBox.Show("The path \"" + transactionDirectory + "\" is not valid!");
-                return;
-            }
-            Properties.Settings.Default.transactionDirectory = transactionDirectory;
-            Properties.Settings.Default.Save();
-
-            try
-            {
-                traverseTreeForEach(transactionDirectory, (fullPathFilename) =>
-                {
-                    try
-                    {
-                        FileInfo fileInfo = new FileInfo(fullPathFilename);
-                        DateTime creationTime = fileInfo.CreationTime;
-                        int ageInHours = (int)DateTime.Now.Subtract(creationTime).TotalHours;
-                        int ageInDays = (int)DateTime.Now.Subtract(creationTime).TotalDays;
-
-                        if (ageInHours > 50)
-                        {
-                            ListViewItem itemOldFile = new ListViewItem(new string[] {
-                                fileInfo.Name,
-                                fileInfo.Length.ToString(),
-                                ageInDays.ToString(),
-                                fileInfo.CreationTime.ToShortDateString(),
-                                fileInfo.DirectoryName ?? ""});
-                            itemOldFile.Tag = fileInfo.FullName;
-                            listViewOldFiles.Items.Add(itemOldFile);
-
-                            // Do nothing with the data except read it.
-                            byte[] data = File.ReadAllBytes(fullPathFilename);
-                            bool otherThanNull = false;
-                            foreach (byte b in data)
-                            {
-                                if (b != 0)
-                                {
-                                    otherThanNull = true;
-                                    break;
-                                }
-                            }
-                            if (!otherThanNull)
-                            {
-                                ListViewItem itemNullFile = new ListViewItem(new string[] {
-                                    fileInfo.Name,
-                                    fileInfo.Length.ToString(),
-                                    ageInDays.ToString(),
-                                    fileInfo.CreationTime.ToShortDateString(),
-                                    fileInfo.DirectoryName ?? ""});
-                                itemNullFile.Tag = fileInfo.FullName;
-                                this.listViewOldFilesFilledWithNulls.Items.Add(itemNullFile);
-                            }
-                        }
-                    }
-                    catch (FileNotFoundException) { }
-                    catch (IOException) { }
-                    catch (UnauthorizedAccessException) { }
-                    catch (SecurityException) { }
-
-                    //logToTextBox(fullPathFilename);
-                });
-            }
-            catch (ArgumentException)
-            {
-                logToTextBox(@"The directory 'C:\Program Files' does not exist.");
-            }
-        }
-
         private void logToTextBox(string t)
         {
             textBoxLog.Text = t + "\r\n" + textBoxLog.Text;
-        }
-
-        public void traverseTreeForEach(string root, Action<string> action)
-        {
-            //Count of files traversed and timer for diagnostic output
-            int fileCount = 0;
-            var sw = Stopwatch.StartNew();
-
-            // Data structure to hold names of subfolders to be examined for files.
-            Stack<string> dirs = new Stack<string>();
-
-            if (!Directory.Exists(root))
-            {
-                throw new ArgumentException(
-                    "The given root directory doesn't exist.", nameof(root));
-            }
-            dirs.Push(root);
-
-            while (dirs.Count > 0)
-            {
-                string currentDir = dirs.Pop();
-                string[] subDirs = { };
-                string[] files = { };
-
-                try
-                {
-                    subDirs = Directory.GetDirectories(currentDir);
-                }
-                // Thrown if we do not have discovery permission on the directory.
-                catch (UnauthorizedAccessException e)
-                {
-                    logToTextBox(e.Message);
-                    continue;
-                }
-                // Thrown if another process has deleted the directory after we retrieved its name.
-                catch (DirectoryNotFoundException e)
-                {
-                    logToTextBox(e.Message);
-                    continue;
-                }
-
-                try
-                {
-                    files = Directory.GetFiles(currentDir);
-                }
-                catch (UnauthorizedAccessException e)
-                {
-                    logToTextBox(e.Message);
-                    continue;
-                }
-                catch (DirectoryNotFoundException e)
-                {
-                    logToTextBox(e.Message);
-                    continue;
-                }
-                catch (IOException e)
-                {
-                    logToTextBox(e.Message);
-                    continue;
-                }
-
-                // Execute in parallel if there are enough files in the directory.
-                // Otherwise, execute sequentially.Files are opened and processed
-                // synchronously but this could be modified to perform async I/O.
-                try
-                {
-                    foreach (var file in files)
-                    {
-                        action(file);
-                        fileCount++;
-                    }
-                }
-                catch (AggregateException ae)
-                {
-                    ae.Handle((ex) =>
-                    {
-                        if (ex is UnauthorizedAccessException)
-                        {
-                            // Here we just output a message and go on.
-                            logToTextBox(ex.Message);
-                            return true;
-                        }
-                        // Handle other exceptions here if necessary...
-
-                        return false;
-                    });
-                }
-
-                // Push the subdirectories onto the stack for traversal.
-                // This could also be done before handing the files.
-                foreach (string str in subDirs)
-                    dirs.Push(str);
-            }
-
-            // For diagnostic purposes.
-            logToTextBox($"Processed {fileCount} files in {sw.ElapsedMilliseconds} milliseconds");
         }
 
         private void listViewOldFiles_SelectedIndexChanged(object sender, EventArgs e)
