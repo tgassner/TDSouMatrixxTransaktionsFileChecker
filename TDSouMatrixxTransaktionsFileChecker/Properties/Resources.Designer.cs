@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TDSouMatrixxTransaktionsFileChecker.Properties {
+namespace TransparentDesign.SouMatrixxTransaktionsFileChecker.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace TDSouMatrixxTransaktionsFileChecker.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TDSouMatrixxTransaktionsFileChecker.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TransparentDesign.SouMatrixxTransaktionsFileChecker.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -1,8 +1,7 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using System.Security;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 {
@@ -11,6 +10,11 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private readonly Color lightGreen = Color.FromArgb(255, 150, 220, 150);
         private readonly Color lightRed = Color.FromArgb(255, 240, 150, 150);
         private readonly Color lightYellow = Color.FromArgb(255, 255, 255, 180);
+
+        private int _sortColumnOldFiles = -1;
+        private int _sortColumnNullFiles = -1;
+        private SortOrder _sortOrderOldFiles = SortOrder.Ascending;
+        private SortOrder _sortOrderNullFiles = SortOrder.Ascending;
 
         public record FileScanProgress(string Message, int TotalFilesProcessed, int OldFilesProcessed, int NullFilesProcessed);
 
@@ -25,7 +29,9 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private async void buttonFindSuspiciousTransactions_Click(object sender, EventArgs e)
         {
             listViewOldFiles.Items.Clear();
+            cleanListViewSortColumn(listViewOldFiles);
             listViewFilesFilledWithNulls.Items.Clear();
+            cleanListViewSortColumn(listViewFilesFilledWithNulls);
             textBoxTotalFilesProcessed.Text = "0";
             textBoxOldFilesProcessed.Text = "0";
             textBoxNullFilesProcessed.Text = "0";
@@ -117,7 +123,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                             fileInfo.DirectoryName ?? ""});
                         itemOldFile.Tag = fileInfo.FullName;
                         oldFileItems.Add(itemOldFile);
-                    } 
+                    }
                     else if (creationTime.Date > DateTime.Now.Date)
                     {
                         logStr = "File \"" + fileInfo.FullName + "\" has a creation date in the future: " + creationTime.ToShortDateString();
@@ -126,7 +132,8 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                     // Files containing NULL values or empty Filed
                     byte[] data = File.ReadAllBytes(file);
                     bool containsNullValueOrIsEmpty = data.Length == 0;
-                    if (!containsNullValueOrIsEmpty) {
+                    if (!containsNullValueOrIsEmpty)
+                    {
                         foreach (byte b in data)
                         {
                             if (b == 0)
@@ -212,7 +219,9 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             textBox.BackColor = bkColor;
 
             listViewOldFiles.Items.Clear();
+            cleanListViewSortColumn(listViewOldFiles);
             listViewFilesFilledWithNulls.Items.Clear();
+            cleanListViewSortColumn(listViewFilesFilledWithNulls);
             textBoxTotalFilesProcessed.Text = "";
             textBoxOldFilesProcessed.Text = "";
             textBoxNullFilesProcessed.Text = "";
@@ -371,7 +380,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private void buttonInfo_Click(object sender, EventArgs e)
         {
             logToTextBox("Internal Tool of the company\r\n" +
-                "�Transparent Design� Handelsgesellschaft m.b.H.\r\n" +
+                "„Transparent Design“ Handelsgesellschaft m.b.H.\r\n" +
                 "https://www.transparentdesign.at\r\n" +
                 "This tool is designed to help identify and manage old (transaction) files in the specified directory.\r\n" +
                 "It scans for files that are older than a couple of hours and checks if they contain only binary null values.\r\n" +
@@ -379,6 +388,50 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                 "Please ensure you have the necessary permission to delete files in the target directory.\r\n" +
                 "Always review the files before deletion to avoid accidental loss of important data.\r\n" +
                 "There absolutely is no warranty, but you can use it as you want without mentioning the author.\r\n");
+        }
+
+        private void listViewOldFiles_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            doSort(e, listViewOldFiles, ref _sortColumnOldFiles, ref _sortOrderOldFiles);
+        }
+
+        private void listViewFilesFilledWithNulls_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            doSort(e, listViewFilesFilledWithNulls, ref _sortColumnNullFiles, ref _sortOrderNullFiles);
+        }
+
+        private void doSort(ColumnClickEventArgs e, ListView listView
+            , ref int sortColumn, ref SortOrder sortOrder)
+        {
+            if (e.Column == sortColumn)
+            {
+                sortOrder = sortOrder == SortOrder.Ascending
+                    ? SortOrder.Descending
+                    : SortOrder.Ascending;
+            }
+            else
+            {
+                // neue Spalte
+                sortColumn = e.Column;
+                sortOrder = SortOrder.Ascending;
+            }
+
+            listView.ListViewItemSorter =
+                new ListViewItemComparer(sortColumn, sortOrder);
+
+            listView.Sort();
+
+            cleanListViewSortColumn(listView);
+
+            listView.Columns[e.Column].Text += sortOrder == SortOrder.Ascending ? " ↑" : " ↓";
+        }
+
+        private void cleanListViewSortColumn(ListView listView)
+        {
+            foreach (ColumnHeader column in listView.Columns)
+            {
+                column.Text = column.Text.Replace(" ↑", "").Replace(" ↓", "").Trim();
+            }
         }
     }
 }

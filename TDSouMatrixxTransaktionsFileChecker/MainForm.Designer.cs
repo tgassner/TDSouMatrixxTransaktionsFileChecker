@@ -83,6 +83,7 @@
             listViewOldFiles.TabIndex = 2;
             listViewOldFiles.UseCompatibleStateImageBehavior = false;
             listViewOldFiles.View = View.Details;
+            listViewOldFiles.ColumnClick += listViewOldFiles_ColumnClick;
             listViewOldFiles.SelectedIndexChanged += listViewOldFiles_SelectedIndexChanged;
             // 
             // buttonFindTransactionDirectory
@@ -131,6 +132,7 @@
             listViewFilesFilledWithNulls.TabIndex = 7;
             listViewFilesFilledWithNulls.UseCompatibleStateImageBehavior = false;
             listViewFilesFilledWithNulls.View = View.Details;
+            listViewFilesFilledWithNulls.ColumnClick += listViewFilesFilledWithNulls_ColumnClick;
             listViewFilesFilledWithNulls.SelectedIndexChanged += listViewOldFilesFilledWithNulls_SelectedIndexChanged;
             // 
             // labelLog
