@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Security;
 using System.Windows.Forms;
 
@@ -10,7 +11,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private readonly Color lightRed = Color.FromArgb(255, 240, 150, 150);
         private readonly Color lightYellow = Color.FromArgb(255, 255, 255, 180);
 
-        public record FileScanProgress(string Message, int FilesProcessed);
+        public record FileScanProgress(string Message, int TotalFilesProcessed, int OldFilesProcessed, int OldNullFilesProcessed);
 
         private CancellationTokenSource? _cts;
 
@@ -19,11 +20,19 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         {
             _cts?.Cancel();
         }
-       
+
         private async void buttonFindSuspiciousTransactions_Click(object sender, EventArgs e)
         {
-            this.listViewOldFiles.Items.Clear();
-            this.listViewOldFilesFilledWithNulls.Items.Clear();
+            listViewOldFiles.Items.Clear();
+            listViewOldFilesFilledWithNulls.Items.Clear();
+            textBoxTotalFilesProcessed.Text = "0";
+            textBoxOldFilesProcessed.Text = "0";
+            textBoxOldNullFilesProcessed.Text = "0";
+            buttonDeleteSelectedOldFiles.Enabled = false;
+            buttonDeleteSelectedOldNULLFiles.Enabled = false;
+            buttonFindTransactionDirectory.Enabled = false;
+            progressBarSearch.Visible = true;
+
             string transactionDirectory = textBoxTransactionDirectory.Text;
             if (String.IsNullOrWhiteSpace(transactionDirectory) || !new DirectoryInfo(transactionDirectory).Exists)
             {
@@ -40,9 +49,13 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 
             var progress = new Progress<FileScanProgress>(p =>
             {
-                //logToTextBox(p.Message);
-                //logToTextBox(p.FilesProcessed.ToString());
-                //progressBarSearch.Value = p.FilesProcessed; // optional
+                textBoxTotalFilesProcessed.Text = p.TotalFilesProcessed.ToString();
+                textBoxOldFilesProcessed.Text = p.OldFilesProcessed.ToString();
+                textBoxOldNullFilesProcessed.Text = p.OldNullFilesProcessed.ToString();
+                if (!string.IsNullOrWhiteSpace(p.Message))
+                {
+                    logToTextBox(p.Message);
+                }
             });
 
             try
@@ -53,11 +66,17 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             catch (OperationCanceledException)
             {
                 logToTextBox("aborted ");
+                textBoxTotalFilesProcessed.Text = "";
+                textBoxOldFilesProcessed.Text = "";
+                textBoxOldNullFilesProcessed.Text = "";
+
             }
             finally
             {
                 buttonFindSuspiciousTransactions.Enabled = true;
                 buttonCancelSearch.Enabled = false;
+                buttonFindTransactionDirectory.Enabled = true;
+                progressBarSearch.Visible = false;
             }
         }
 
@@ -66,12 +85,16 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             IProgress<FileScanProgress> progress,
             CancellationToken cancellationToken)
         {
-            int count = 0;
+            int countTotal = 0;
+            int countOld = 0;
+            int countOldNull = 0;
             IList<ListViewItem> oldFileItems = new List<ListViewItem>();
             IList<ListViewItem> nullFileItems = new List<ListViewItem>();
+            Stopwatch sw = Stopwatch.StartNew();
 
             foreach (string file in Directory.EnumerateFiles(rootPath, "*", SearchOption.AllDirectories))
             {
+                countTotal++;
                 cancellationToken.ThrowIfCancellationRequested();
 
                 try
@@ -83,6 +106,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 
                     if (ageInHours > 50)
                     {
+                        countOld++;
                         ListViewItem itemOldFile = new ListViewItem(new string[] {
                             fileInfo.Name,
                             fileInfo.Length.ToString(),
@@ -105,6 +129,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                         }
                         if (!otherThanNull)
                         {
+                            countOldNull++;
                             ListViewItem itemNullFile = new ListViewItem(new string[] {
                                 fileInfo.Name,
                                 fileInfo.Length.ToString(),
@@ -116,17 +141,29 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                         }
                     }
                 }
-                catch (FileNotFoundException) { }
-                catch (IOException) { }
-                catch (UnauthorizedAccessException) { }
-                catch (SecurityException) { }
+                catch (FileNotFoundException e)
+                {
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countOldNull));
+                }
+                catch (IOException e)
+                {
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countOldNull));
+                }
+                catch (UnauthorizedAccessException e)
+                {
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countOldNull));
+                }
+                catch (SecurityException e)
+                {
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countOldNull));
+                }
 
-                progress?.Report(new FileScanProgress(
-                    $"Verarbeite: {Path.GetFileName(file)}",
-                    count));
+                progress?.Report(new FileScanProgress(null, countTotal, countOld, countOldNull));
             }
+
             listViewOldFiles.Items.AddRange(oldFileItems.ToArray());
             listViewOldFilesFilledWithNulls.Items.AddRange(nullFileItems.ToArray());
+            progress?.Report(new FileScanProgress("Search-Run finished. TotalFiles=" + countTotal + " OldFiles=" + countOld + " Old Files containing only binary null=" + countOldNull + " " + sw.ElapsedMilliseconds + " ms", countTotal, countOld, countOldNull));
         }
 
 
@@ -166,10 +203,20 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             Color bkColor = (directoryInfo.Exists ? this.lightGreen : this.lightRed);
             buttonFindSuspiciousTransactions.Enabled = directoryInfo.Exists;
             textBox.BackColor = bkColor;
+
+            listViewOldFiles.Items.Clear();
+            listViewOldFilesFilledWithNulls.Items.Clear();
+            textBoxTotalFilesProcessed.Text = "";
+            textBoxOldFilesProcessed.Text = "";
+            textBoxOldNullFilesProcessed.Text = "";
+            buttonDeleteSelectedOldFiles.Enabled = false;
+            buttonDeleteSelectedOldNULLFiles.Enabled = false;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            this.Text = this.Text + "  Version:" + Assembly.GetExecutingAssembly().GetName().Version;
+
             buttonFindSuspiciousTransactions.Enabled = false;
             buttonDeleteSelectedOldFiles.Enabled = false;
             buttonDeleteSelectedOldNULLFiles.Enabled = false;
@@ -178,10 +225,10 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             this.textBoxTransactionDirectory.Text = transactionDirectory;
 
             listViewOldFiles.Columns.Clear();
-            listViewOldFiles.Columns.Add("Filename", 250);
-            listViewOldFiles.Columns.Add("Filesize", 50);
-            listViewOldFiles.Columns.Add("Age [Days]", 80);
-            listViewOldFiles.Columns.Add("Creation Date", 150);
+            listViewOldFiles.Columns.Add("Filename", 260);
+            listViewOldFiles.Columns.Add("Filesize", 70);
+            listViewOldFiles.Columns.Add("Age [Days]", 100);
+            listViewOldFiles.Columns.Add("Creation Date", 100);
             listViewOldFiles.Columns.Add("Path", 350);
 
             listViewOldFilesFilledWithNulls.Columns.Clear();
@@ -245,17 +292,21 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             {
                 if (item != null && item.Tag != null && new FileInfo(item.Tag.ToString()).Exists)
                 {
-                    DeleteSelectedFilesAndLog(item.Tag.ToString());
+                    if (DeleteSelectedFilesAndLog(item.Tag.ToString()))
+                    {
+                        item.Remove();
+                    }
                 }
             }
         }
 
-        private void DeleteSelectedFilesAndLog(string filePath)
+        private bool DeleteSelectedFilesAndLog(string filePath)
         {
             try
             {
                 File.Delete(filePath);
-                logToTextBox(filePath + " deleted.");
+                logToTextBox(filePath + " *** deleted. ***");
+                return true;
             }
             catch (ArgumentNullException ex)
             {
@@ -285,6 +336,20 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             {
                 logToTextBox(ex.Message);
             }
+            return false;
+        }
+
+        private void buttonInfo_Click(object sender, EventArgs e)
+        {
+            logToTextBox("Internal Tool of the company\r\n" +
+                "„Transparent Design“ Handelsgesellschaft m.b.H.\r\n" +
+                "https://www.transparentdesign.at\r\n" +
+                "This tool is designed to help identify and manage old (transaction) files in the specified directory.\r\n" +
+                "It scans for files that are older than a couple of hours and checks if they contain only binary null values.\r\n" +
+                "You can select and delete suspicious files directly from the interface.\r\n" +
+                "Please ensure you have the necessary permission to delete files in the target directory.\r\n" +
+                "Always review the files before deletion to avoid accidental loss of important data.\r\n" +
+                "There absolutely is no warranty, but you can use it as you want without mentioning the author.\r\n");
         }
     }
 }

@@ -46,14 +46,22 @@
             buttonDeleteSelectedOldNULLFiles = new Button();
             buttonCancelSearch = new Button();
             progressBarSearch = new ProgressBar();
+            labelTotalFilesProcessed = new Label();
+            textBoxTotalFilesProcessed = new TextBox();
+            textBoxOldFilesProcessed = new TextBox();
+            labelOldFilesProcessed = new Label();
+            textBoxOldNullFilesProcessed = new TextBox();
+            labelOldNullFilesProcessed = new Label();
+            buttonInfo = new Button();
+            pictureBoxTdToken = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxTdToken).BeginInit();
             SuspendLayout();
             // 
             // buttonFindSuspiciousTransactions
             // 
-            buttonFindSuspiciousTransactions.Location = new Point(14, 55);
-            buttonFindSuspiciousTransactions.Margin = new Padding(3, 4, 3, 4);
+            buttonFindSuspiciousTransactions.Location = new Point(12, 41);
             buttonFindSuspiciousTransactions.Name = "buttonFindSuspiciousTransactions";
-            buttonFindSuspiciousTransactions.Size = new Size(441, 52);
+            buttonFindSuspiciousTransactions.Size = new Size(386, 39);
             buttonFindSuspiciousTransactions.TabIndex = 0;
             buttonFindSuspiciousTransactions.Text = "### Find Suspicious Transactions ###";
             buttonFindSuspiciousTransactions.UseVisualStyleBackColor = true;
@@ -61,19 +69,17 @@
             // 
             // textBoxTransactionDirectory
             // 
-            textBoxTransactionDirectory.Location = new Point(176, 17);
-            textBoxTransactionDirectory.Margin = new Padding(3, 4, 3, 4);
+            textBoxTransactionDirectory.Location = new Point(154, 12);
             textBoxTransactionDirectory.Name = "textBoxTransactionDirectory";
-            textBoxTransactionDirectory.Size = new Size(561, 27);
+            textBoxTransactionDirectory.Size = new Size(491, 23);
             textBoxTransactionDirectory.TabIndex = 1;
             textBoxTransactionDirectory.TextChanged += textBoxTransactionDirectory_TextChanged;
             // 
             // listViewOldFiles
             // 
-            listViewOldFiles.Location = new Point(14, 135);
-            listViewOldFiles.Margin = new Padding(3, 4, 3, 4);
+            listViewOldFiles.Location = new Point(12, 101);
             listViewOldFiles.Name = "listViewOldFiles";
-            listViewOldFiles.Size = new Size(1417, 268);
+            listViewOldFiles.Size = new Size(1240, 155);
             listViewOldFiles.TabIndex = 2;
             listViewOldFiles.UseCompatibleStateImageBehavior = false;
             listViewOldFiles.View = View.Details;
@@ -81,10 +87,9 @@
             // 
             // buttonFindTransactionDirectory
             // 
-            buttonFindTransactionDirectory.Location = new Point(743, 15);
-            buttonFindTransactionDirectory.Margin = new Padding(3, 4, 3, 4);
+            buttonFindTransactionDirectory.Location = new Point(651, 12);
             buttonFindTransactionDirectory.Name = "buttonFindTransactionDirectory";
-            buttonFindTransactionDirectory.Size = new Size(29, 31);
+            buttonFindTransactionDirectory.Size = new Size(25, 23);
             buttonFindTransactionDirectory.TabIndex = 3;
             buttonFindTransactionDirectory.Text = "…";
             toolTipChooseDirectory.SetToolTip(buttonFindTransactionDirectory, "choose Directory…");
@@ -93,38 +98,36 @@
             // 
             // textBoxLog
             // 
-            textBoxLog.Location = new Point(14, 751);
-            textBoxLog.Margin = new Padding(3, 4, 3, 4);
+            textBoxLog.Location = new Point(12, 516);
             textBoxLog.Multiline = true;
             textBoxLog.Name = "textBoxLog";
             textBoxLog.ReadOnly = true;
-            textBoxLog.Size = new Size(1417, 247);
+            textBoxLog.Size = new Size(1240, 119);
             textBoxLog.TabIndex = 4;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(14, 111);
+            label1.Location = new Point(12, 83);
             label1.Name = "label1";
-            label1.Size = new Size(82, 20);
+            label1.Size = new Size(65, 15);
             label1.TabIndex = 5;
             label1.Text = "Older Files:";
             // 
             // labelOlderNullFilledFiles
             // 
             labelOlderNullFilledFiles.AutoSize = true;
-            labelOlderNullFilledFiles.Location = new Point(14, 461);
+            labelOlderNullFilledFiles.Location = new Point(12, 299);
             labelOlderNullFilledFiles.Name = "labelOlderNullFilledFiles";
-            labelOlderNullFilledFiles.Size = new Size(224, 20);
+            labelOlderNullFilledFiles.Size = new Size(177, 15);
             labelOlderNullFilledFiles.TabIndex = 6;
             labelOlderNullFilledFiles.Text = "Older NULL  filled or empty Files";
             // 
             // listViewOldFilesFilledWithNulls
             // 
-            listViewOldFilesFilledWithNulls.Location = new Point(14, 485);
-            listViewOldFilesFilledWithNulls.Margin = new Padding(3, 4, 3, 4);
+            listViewOldFilesFilledWithNulls.Location = new Point(12, 317);
             listViewOldFilesFilledWithNulls.Name = "listViewOldFilesFilledWithNulls";
-            listViewOldFilesFilledWithNulls.Size = new Size(1417, 185);
+            listViewOldFilesFilledWithNulls.Size = new Size(1240, 140);
             listViewOldFilesFilledWithNulls.TabIndex = 7;
             listViewOldFilesFilledWithNulls.UseCompatibleStateImageBehavior = false;
             listViewOldFilesFilledWithNulls.View = View.Details;
@@ -133,27 +136,26 @@
             // labelLog
             // 
             labelLog.AutoSize = true;
-            labelLog.Location = new Point(14, 727);
+            labelLog.Location = new Point(12, 498);
             labelLog.Name = "labelLog";
-            labelLog.Size = new Size(37, 20);
+            labelLog.Size = new Size(30, 15);
             labelLog.TabIndex = 8;
             labelLog.Text = "Log:";
             // 
             // labelTransactionFilesRoot
             // 
             labelTransactionFilesRoot.AutoSize = true;
-            labelTransactionFilesRoot.Location = new Point(14, 20);
+            labelTransactionFilesRoot.Location = new Point(23, 15);
             labelTransactionFilesRoot.Name = "labelTransactionFilesRoot";
-            labelTransactionFilesRoot.Size = new Size(156, 20);
+            labelTransactionFilesRoot.Size = new Size(125, 15);
             labelTransactionFilesRoot.TabIndex = 9;
             labelTransactionFilesRoot.Text = "Transaction Files Root:";
             // 
             // buttonDeleteSelectedOldFiles
             // 
-            buttonDeleteSelectedOldFiles.Location = new Point(14, 412);
-            buttonDeleteSelectedOldFiles.Margin = new Padding(3, 4, 3, 4);
+            buttonDeleteSelectedOldFiles.Location = new Point(12, 262);
             buttonDeleteSelectedOldFiles.Name = "buttonDeleteSelectedOldFiles";
-            buttonDeleteSelectedOldFiles.Size = new Size(286, 31);
+            buttonDeleteSelectedOldFiles.Size = new Size(250, 23);
             buttonDeleteSelectedOldFiles.TabIndex = 10;
             buttonDeleteSelectedOldFiles.Text = "DELETE selected Old Files";
             buttonDeleteSelectedOldFiles.UseVisualStyleBackColor = true;
@@ -162,10 +164,9 @@
             // 
             // buttonDeleteSelectedOldNULLFiles
             // 
-            buttonDeleteSelectedOldNULLFiles.Location = new Point(14, 680);
-            buttonDeleteSelectedOldNULLFiles.Margin = new Padding(3, 4, 3, 4);
+            buttonDeleteSelectedOldNULLFiles.Location = new Point(12, 463);
             buttonDeleteSelectedOldNULLFiles.Name = "buttonDeleteSelectedOldNULLFiles";
-            buttonDeleteSelectedOldNULLFiles.Size = new Size(286, 31);
+            buttonDeleteSelectedOldNULLFiles.Size = new Size(250, 23);
             buttonDeleteSelectedOldNULLFiles.TabIndex = 11;
             buttonDeleteSelectedOldNULLFiles.Text = "DELETE seleted Old NULL Files";
             buttonDeleteSelectedOldNULLFiles.UseVisualStyleBackColor = true;
@@ -175,9 +176,10 @@
             // buttonCancelSearch
             // 
             buttonCancelSearch.Enabled = false;
-            buttonCancelSearch.Location = new Point(461, 55);
+            buttonCancelSearch.Location = new Point(403, 41);
+            buttonCancelSearch.Margin = new Padding(3, 2, 3, 2);
             buttonCancelSearch.Name = "buttonCancelSearch";
-            buttonCancelSearch.Size = new Size(197, 52);
+            buttonCancelSearch.Size = new Size(172, 39);
             buttonCancelSearch.TabIndex = 12;
             buttonCancelSearch.Text = "Cancel Search";
             buttonCancelSearch.UseVisualStyleBackColor = true;
@@ -185,16 +187,98 @@
             // 
             // progressBarSearch
             // 
-            progressBarSearch.Location = new Point(664, 55);
+            progressBarSearch.Location = new Point(581, 41);
+            progressBarSearch.Margin = new Padding(3, 2, 3, 2);
             progressBarSearch.Name = "progressBarSearch";
-            progressBarSearch.Size = new Size(304, 52);
+            progressBarSearch.Size = new Size(195, 39);
+            progressBarSearch.Style = ProgressBarStyle.Marquee;
             progressBarSearch.TabIndex = 13;
+            progressBarSearch.Visible = false;
+            // 
+            // labelTotalFilesProcessed
+            // 
+            labelTotalFilesProcessed.AutoSize = true;
+            labelTotalFilesProcessed.Location = new Point(879, 15);
+            labelTotalFilesProcessed.Name = "labelTotalFilesProcessed";
+            labelTotalFilesProcessed.Size = new Size(118, 15);
+            labelTotalFilesProcessed.TabIndex = 14;
+            labelTotalFilesProcessed.Text = "Total Files Processed:";
+            // 
+            // textBoxTotalFilesProcessed
+            // 
+            textBoxTotalFilesProcessed.Enabled = false;
+            textBoxTotalFilesProcessed.Location = new Point(1003, 12);
+            textBoxTotalFilesProcessed.Name = "textBoxTotalFilesProcessed";
+            textBoxTotalFilesProcessed.Size = new Size(100, 23);
+            textBoxTotalFilesProcessed.TabIndex = 15;
+            // 
+            // textBoxOldFilesProcessed
+            // 
+            textBoxOldFilesProcessed.Enabled = false;
+            textBoxOldFilesProcessed.Location = new Point(1003, 41);
+            textBoxOldFilesProcessed.Name = "textBoxOldFilesProcessed";
+            textBoxOldFilesProcessed.Size = new Size(100, 23);
+            textBoxOldFilesProcessed.TabIndex = 17;
+            // 
+            // labelOldFilesProcessed
+            // 
+            labelOldFilesProcessed.AutoSize = true;
+            labelOldFilesProcessed.Location = new Point(886, 44);
+            labelOldFilesProcessed.Name = "labelOldFilesProcessed";
+            labelOldFilesProcessed.Size = new Size(111, 15);
+            labelOldFilesProcessed.TabIndex = 16;
+            labelOldFilesProcessed.Text = "Old Files Processed:";
+            // 
+            // textBoxOldNullFilesProcessed
+            // 
+            textBoxOldNullFilesProcessed.Enabled = false;
+            textBoxOldNullFilesProcessed.Location = new Point(1003, 70);
+            textBoxOldNullFilesProcessed.Name = "textBoxOldNullFilesProcessed";
+            textBoxOldNullFilesProcessed.Size = new Size(100, 23);
+            textBoxOldNullFilesProcessed.TabIndex = 19;
+            // 
+            // labelOldNullFilesProcessed
+            // 
+            labelOldNullFilesProcessed.AutoSize = true;
+            labelOldNullFilesProcessed.Location = new Point(861, 73);
+            labelOldNullFilesProcessed.Name = "labelOldNullFilesProcessed";
+            labelOldNullFilesProcessed.Size = new Size(136, 15);
+            labelOldNullFilesProcessed.TabIndex = 18;
+            labelOldNullFilesProcessed.Text = "Old Null Files Processed:";
+            // 
+            // buttonInfo
+            // 
+            buttonInfo.Location = new Point(1225, 10);
+            buttonInfo.Name = "buttonInfo";
+            buttonInfo.Size = new Size(27, 27);
+            buttonInfo.TabIndex = 20;
+            buttonInfo.Text = "?";
+            buttonInfo.UseVisualStyleBackColor = true;
+            buttonInfo.Click += buttonInfo_Click;
+            // 
+            // pictureBoxTdToken
+            // 
+            pictureBoxTdToken.Image = (Image)resources.GetObject("pictureBoxTdToken.Image");
+            pictureBoxTdToken.Location = new Point(1136, 10);
+            pictureBoxTdToken.Name = "pictureBoxTdToken";
+            pictureBoxTdToken.Size = new Size(83, 83);
+            pictureBoxTdToken.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBoxTdToken.TabIndex = 21;
+            pictureBoxTdToken.TabStop = false;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1445, 1015);
+            ClientSize = new Size(1264, 647);
+            Controls.Add(pictureBoxTdToken);
+            Controls.Add(buttonInfo);
+            Controls.Add(textBoxOldNullFilesProcessed);
+            Controls.Add(labelOldNullFilesProcessed);
+            Controls.Add(textBoxOldFilesProcessed);
+            Controls.Add(labelOldFilesProcessed);
+            Controls.Add(textBoxTotalFilesProcessed);
+            Controls.Add(labelTotalFilesProcessed);
             Controls.Add(progressBarSearch);
             Controls.Add(buttonCancelSearch);
             Controls.Add(buttonDeleteSelectedOldNULLFiles);
@@ -210,10 +294,10 @@
             Controls.Add(textBoxTransactionDirectory);
             Controls.Add(buttonFindSuspiciousTransactions);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(3, 4, 3, 4);
             Name = "MainForm";
             Text = "Transparentdesign Sou.Matrixx Transaction File Checker";
             Load += MainForm_Load;
+            ((System.ComponentModel.ISupportInitialize)pictureBoxTdToken).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -236,5 +320,13 @@
         private Button buttonDeleteSelectedOldNULLFiles;
         private Button buttonCancelSearch;
         private ProgressBar progressBarSearch;
+        private Label labelTotalFilesProcessed;
+        private TextBox textBoxTotalFilesProcessed;
+        private TextBox textBoxOldFilesProcessed;
+        private Label labelOldFilesProcessed;
+        private TextBox textBoxOldNullFilesProcessed;
+        private Label labelOldNullFilesProcessed;
+        private Button buttonInfo;
+        private PictureBox pictureBoxTdToken;
     }
 }
