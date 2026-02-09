@@ -37,20 +37,20 @@
             buttonFindTransactionDirectory = new Button();
             textBoxLog = new TextBox();
             label1 = new Label();
-            labelOlderNullFilledFiles = new Label();
-            listViewOldFilesFilledWithNulls = new ListView();
+            labelNullContainingFiles = new Label();
+            listViewFilesFilledWithNulls = new ListView();
             labelLog = new Label();
             labelTransactionFilesRoot = new Label();
             toolTipChooseDirectory = new ToolTip(components);
             buttonDeleteSelectedOldFiles = new Button();
-            buttonDeleteSelectedOldNULLFiles = new Button();
+            buttonDeleteSelectedNULLFiles = new Button();
             buttonCancelSearch = new Button();
             progressBarSearch = new ProgressBar();
             labelTotalFilesProcessed = new Label();
             textBoxTotalFilesProcessed = new TextBox();
             textBoxOldFilesProcessed = new TextBox();
             labelOldFilesProcessed = new Label();
-            textBoxOldNullFilesProcessed = new TextBox();
+            textBoxNullFilesProcessed = new TextBox();
             labelOldNullFilesProcessed = new Label();
             buttonInfo = new Button();
             pictureBoxTdToken = new PictureBox();
@@ -114,24 +114,24 @@
             label1.TabIndex = 5;
             label1.Text = "Older Files:";
             // 
-            // labelOlderNullFilledFiles
+            // labelNullContainingFiles
             // 
-            labelOlderNullFilledFiles.AutoSize = true;
-            labelOlderNullFilledFiles.Location = new Point(12, 299);
-            labelOlderNullFilledFiles.Name = "labelOlderNullFilledFiles";
-            labelOlderNullFilledFiles.Size = new Size(177, 15);
-            labelOlderNullFilledFiles.TabIndex = 6;
-            labelOlderNullFilledFiles.Text = "Older NULL  filled or empty Files";
+            labelNullContainingFiles.AutoSize = true;
+            labelNullContainingFiles.Location = new Point(12, 299);
+            labelNullContainingFiles.Name = "labelNullContainingFiles";
+            labelNullContainingFiles.Size = new Size(173, 15);
+            labelNullContainingFiles.TabIndex = 6;
+            labelNullContainingFiles.Text = "NULL containing or empty Files";
             // 
-            // listViewOldFilesFilledWithNulls
+            // listViewFilesFilledWithNulls
             // 
-            listViewOldFilesFilledWithNulls.Location = new Point(12, 317);
-            listViewOldFilesFilledWithNulls.Name = "listViewOldFilesFilledWithNulls";
-            listViewOldFilesFilledWithNulls.Size = new Size(1240, 140);
-            listViewOldFilesFilledWithNulls.TabIndex = 7;
-            listViewOldFilesFilledWithNulls.UseCompatibleStateImageBehavior = false;
-            listViewOldFilesFilledWithNulls.View = View.Details;
-            listViewOldFilesFilledWithNulls.SelectedIndexChanged += listViewOldFilesFilledWithNulls_SelectedIndexChanged;
+            listViewFilesFilledWithNulls.Location = new Point(12, 317);
+            listViewFilesFilledWithNulls.Name = "listViewFilesFilledWithNulls";
+            listViewFilesFilledWithNulls.Size = new Size(1240, 140);
+            listViewFilesFilledWithNulls.TabIndex = 7;
+            listViewFilesFilledWithNulls.UseCompatibleStateImageBehavior = false;
+            listViewFilesFilledWithNulls.View = View.Details;
+            listViewFilesFilledWithNulls.SelectedIndexChanged += listViewOldFilesFilledWithNulls_SelectedIndexChanged;
             // 
             // labelLog
             // 
@@ -162,16 +162,16 @@
             buttonDeleteSelectedOldFiles.EnabledChanged += buttonDeleteSelectedOldFiles_EnabledChanged;
             buttonDeleteSelectedOldFiles.Click += buttonDeleteSelectedOldFiles_Click;
             // 
-            // buttonDeleteSelectedOldNULLFiles
+            // buttonDeleteSelectedNULLFiles
             // 
-            buttonDeleteSelectedOldNULLFiles.Location = new Point(12, 463);
-            buttonDeleteSelectedOldNULLFiles.Name = "buttonDeleteSelectedOldNULLFiles";
-            buttonDeleteSelectedOldNULLFiles.Size = new Size(250, 23);
-            buttonDeleteSelectedOldNULLFiles.TabIndex = 11;
-            buttonDeleteSelectedOldNULLFiles.Text = "DELETE seleted Old NULL Files";
-            buttonDeleteSelectedOldNULLFiles.UseVisualStyleBackColor = true;
-            buttonDeleteSelectedOldNULLFiles.EnabledChanged += buttonDeleteSelectedOldNULLFiles_EnabledChanged;
-            buttonDeleteSelectedOldNULLFiles.Click += buttonDeleteSelectedOldNULLFiles_Click;
+            buttonDeleteSelectedNULLFiles.Location = new Point(12, 463);
+            buttonDeleteSelectedNULLFiles.Name = "buttonDeleteSelectedNULLFiles";
+            buttonDeleteSelectedNULLFiles.Size = new Size(250, 23);
+            buttonDeleteSelectedNULLFiles.TabIndex = 11;
+            buttonDeleteSelectedNULLFiles.Text = "DELETE seleted NULL containing Files";
+            buttonDeleteSelectedNULLFiles.UseVisualStyleBackColor = true;
+            buttonDeleteSelectedNULLFiles.EnabledChanged += buttonDeleteSelectedOldNULLFiles_EnabledChanged;
+            buttonDeleteSelectedNULLFiles.Click += buttonDeleteSelectedOldNULLFiles_Click;
             // 
             // buttonCancelSearch
             // 
@@ -190,7 +190,7 @@
             progressBarSearch.Location = new Point(581, 41);
             progressBarSearch.Margin = new Padding(3, 2, 3, 2);
             progressBarSearch.Name = "progressBarSearch";
-            progressBarSearch.Size = new Size(195, 39);
+            progressBarSearch.Size = new Size(183, 39);
             progressBarSearch.Style = ProgressBarStyle.Marquee;
             progressBarSearch.TabIndex = 13;
             progressBarSearch.Visible = false;
@@ -229,22 +229,22 @@
             labelOldFilesProcessed.TabIndex = 16;
             labelOldFilesProcessed.Text = "Old Files Processed:";
             // 
-            // textBoxOldNullFilesProcessed
+            // textBoxNullFilesProcessed
             // 
-            textBoxOldNullFilesProcessed.Enabled = false;
-            textBoxOldNullFilesProcessed.Location = new Point(1003, 70);
-            textBoxOldNullFilesProcessed.Name = "textBoxOldNullFilesProcessed";
-            textBoxOldNullFilesProcessed.Size = new Size(100, 23);
-            textBoxOldNullFilesProcessed.TabIndex = 19;
+            textBoxNullFilesProcessed.Enabled = false;
+            textBoxNullFilesProcessed.Location = new Point(1003, 70);
+            textBoxNullFilesProcessed.Name = "textBoxNullFilesProcessed";
+            textBoxNullFilesProcessed.Size = new Size(100, 23);
+            textBoxNullFilesProcessed.TabIndex = 19;
             // 
             // labelOldNullFilesProcessed
             // 
             labelOldNullFilesProcessed.AutoSize = true;
-            labelOldNullFilesProcessed.Location = new Point(861, 73);
+            labelOldNullFilesProcessed.Location = new Point(770, 73);
             labelOldNullFilesProcessed.Name = "labelOldNullFilesProcessed";
-            labelOldNullFilesProcessed.Size = new Size(136, 15);
+            labelOldNullFilesProcessed.Size = new Size(227, 15);
             labelOldNullFilesProcessed.TabIndex = 18;
-            labelOldNullFilesProcessed.Text = "Old Null Files Processed:";
+            labelOldNullFilesProcessed.Text = "Null Contianing or empty Files Processed:";
             // 
             // buttonInfo
             // 
@@ -273,7 +273,7 @@
             ClientSize = new Size(1264, 647);
             Controls.Add(pictureBoxTdToken);
             Controls.Add(buttonInfo);
-            Controls.Add(textBoxOldNullFilesProcessed);
+            Controls.Add(textBoxNullFilesProcessed);
             Controls.Add(labelOldNullFilesProcessed);
             Controls.Add(textBoxOldFilesProcessed);
             Controls.Add(labelOldFilesProcessed);
@@ -281,12 +281,12 @@
             Controls.Add(labelTotalFilesProcessed);
             Controls.Add(progressBarSearch);
             Controls.Add(buttonCancelSearch);
-            Controls.Add(buttonDeleteSelectedOldNULLFiles);
+            Controls.Add(buttonDeleteSelectedNULLFiles);
             Controls.Add(buttonDeleteSelectedOldFiles);
             Controls.Add(labelTransactionFilesRoot);
             Controls.Add(labelLog);
-            Controls.Add(listViewOldFilesFilledWithNulls);
-            Controls.Add(labelOlderNullFilledFiles);
+            Controls.Add(listViewFilesFilledWithNulls);
+            Controls.Add(labelNullContainingFiles);
             Controls.Add(label1);
             Controls.Add(textBoxLog);
             Controls.Add(buttonFindTransactionDirectory);
@@ -311,20 +311,20 @@
         private Button buttonFindTransactionDirectory;
         private TextBox textBoxLog;
         private Label label1;
-        private Label labelOlderNullFilledFiles;
-        private ListView listViewOldFilesFilledWithNulls;
+        private Label labelNullContainingFiles;
+        private ListView listViewFilesFilledWithNulls;
         private Label labelLog;
         private Label labelTransactionFilesRoot;
         private ToolTip toolTipChooseDirectory;
         private Button buttonDeleteSelectedOldFiles;
-        private Button buttonDeleteSelectedOldNULLFiles;
+        private Button buttonDeleteSelectedNULLFiles;
         private Button buttonCancelSearch;
         private ProgressBar progressBarSearch;
         private Label labelTotalFilesProcessed;
         private TextBox textBoxTotalFilesProcessed;
         private TextBox textBoxOldFilesProcessed;
         private Label labelOldFilesProcessed;
-        private TextBox textBoxOldNullFilesProcessed;
+        private TextBox textBoxNullFilesProcessed;
         private Label labelOldNullFilesProcessed;
         private Button buttonInfo;
         private PictureBox pictureBoxTdToken;
