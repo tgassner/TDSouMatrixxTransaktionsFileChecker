@@ -13,4 +13,6 @@ Please ensure you have the necessary permission to delete files in the target di
 Always review the files before deletion to avoid accidental loss of important data.
 There absolutely is no warranty, but you can use it as you want without mentioning the author.
 
+Requirement: requires .NET Framework 10
+
 ![Screenshot](assets/TDSouMatrixxTransaktionsFileChecker01.png)
