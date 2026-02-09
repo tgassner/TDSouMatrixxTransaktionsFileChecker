@@ -361,4 +361,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/SouMatrixxTransaktionsChecker/TDSouMatrixxTransaktionsFileChecker.csproj.bak
+/TDSouMatrixxTransaktionsFileChecker/TDSouMatrixxTransaktionsFileChecker.csproj.bak

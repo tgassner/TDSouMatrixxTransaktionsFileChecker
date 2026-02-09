@@ -215,7 +215,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.Text = this.Text + "  Version:" + Assembly.GetExecutingAssembly().GetName().Version;
+            this.Text = this.Text + "  - Version: " + Assembly.GetExecutingAssembly().GetName().Version;
 
             buttonFindSuspiciousTransactions.Enabled = false;
             buttonDeleteSelectedOldFiles.Enabled = false;
