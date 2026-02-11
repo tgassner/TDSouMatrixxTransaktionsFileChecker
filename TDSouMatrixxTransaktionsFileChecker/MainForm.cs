@@ -433,5 +433,138 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                 column.Text = column.Text.Replace(" ↑", "").Replace(" ↓", "").Trim();
             }
         }
+
+        private void listViewOldFiles_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var item = listViewOldFiles.GetItemAt(e.X, e.Y);
+
+                if (item != null)
+                {
+                    listViewOldFiles.SelectedItems.Clear();
+                    item.Selected = true;
+                }
+            }
+        }
+
+        private void listViewFilesFilledWithNulls_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var item = listViewFilesFilledWithNulls.GetItemAt(e.X, e.Y);
+
+                if (item != null)
+                {
+                    listViewFilesFilledWithNulls.SelectedItems.Clear();
+                    item.Selected = true;
+                }
+            }
+        }
+
+        private void contextMenuStripOldFilesListBoxContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            bool hasSelection = listViewOldFiles.SelectedItems.Count > 0;
+
+            if (!hasSelection)
+            {
+                e.Cancel = true;
+                return;
+            }
+        }
+
+        private void contextMenuStripNullFilesListBoxContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            bool hasSelection = listViewFilesFilledWithNulls.SelectedItems.Count > 0;
+
+            if (!hasSelection)
+            {
+                e.Cancel = true;
+                return;
+            }
+        }
+
+        private void toolStripMenuItemOldFilesViewWithWindowsDefaultApp_Click(object sender, EventArgs e)
+        {
+            viewWithWindowsDefaultApp(sender);
+        }
+
+        private void toolStripMenuItemOldFilesViewWithTexteditor_Click(object sender, EventArgs e)
+        {
+            viewWithTextEditor(sender);
+        }
+
+        private void toolStripMenuItemNullFilesViewWithTexteditor_Click(object sender, EventArgs e)
+        {
+            viewWithTextEditor(sender);
+        }
+
+        private void toolStripMenuItemNullFilesViewWithWindowsDefaultApp_Click(object sender, EventArgs e)
+        {
+            viewWithWindowsDefaultApp(sender);
+        }
+
+        private void viewWithWindowsDefaultApp(object sender)
+        {
+            var menu = ((ToolStripItem)sender).Owner as ContextMenuStrip;
+            var listView = menu?.SourceControl as ListView;
+
+            if (listView == null || listView.SelectedItems.Count == 0)
+                return;
+
+            var item = listView.SelectedItems[0];
+            string? filePath = item.Tag?.ToString();
+
+            if (File.Exists(filePath))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = filePath,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                MessageBox.Show("The File: " + filePath + " doesn't exist any more!");
+            }
+        }
+
+        private void viewWithTextEditor(object sender)
+        {
+            var menu = ((ToolStripItem)sender).Owner as ContextMenuStrip;
+            var listView = menu?.SourceControl as ListView;
+
+            if (listView == null || listView.SelectedItems.Count == 0)
+                return;
+
+            var item = listView.SelectedItems[0];
+            string? filePath = item.Tag?.ToString();
+
+            if (File.Exists(filePath))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = File.Exists(@"C:\Program Files\Notepad++\notepad++.exe") ? @"C:\Program Files\Notepad++\notepad++.exe" : "notepad.exe",
+                    Arguments = $"\"{filePath}\"",
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                MessageBox.Show("The File: " + filePath + " doesn't exist any more!");
+            }
+        }
+
+        private void contextMenuStripOldFilesListBoxContextMenuStrip_Click(object sender, EventArgs e)
+        {
+            IterateThroughSelectedAndDelete(listViewOldFiles.SelectedItems);
+            CheckAndRemoveNotExistingFiles(listViewFilesFilledWithNulls.Items);
+        }
+
+        private void toolStripMenuItemNullFilesDelete_Click(object sender, EventArgs e)
+        {
+            IterateThroughSelectedAndDelete(listViewFilesFilledWithNulls.SelectedItems);
+            CheckAndRemoveNotExistingFiles(listViewOldFiles.Items);
+        }
     }
 }

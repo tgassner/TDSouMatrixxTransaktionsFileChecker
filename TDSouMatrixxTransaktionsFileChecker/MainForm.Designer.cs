@@ -34,11 +34,18 @@
             textBoxTransactionDirectory = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             listViewOldFiles = new ListView();
+            contextMenuStripOldFilesListBoxContextMenuStrip = new ContextMenuStrip(components);
+            toolStripMenuItemOldFilesViewWithWindowsDefaultApp = new ToolStripMenuItem();
+            toolStripMenuItemOldFilesViewWithTexteditor = new ToolStripMenuItem();
+            toolStripMenuItemOldFilesDelete = new ToolStripMenuItem();
             buttonFindTransactionDirectory = new Button();
             textBoxLog = new TextBox();
             label1 = new Label();
             labelNullContainingFiles = new Label();
             listViewFilesFilledWithNulls = new ListView();
+            contextMenuStripNullFilesListBoxContextMenuStrip = new ContextMenuStrip(components);
+            toolStripMenuItemNullFilesViewWithWindowsDefaultApp = new ToolStripMenuItem();
+            toolStripMenuItemNullFilesViewWithTexteditor = new ToolStripMenuItem();
             labelLog = new Label();
             labelTransactionFilesRoot = new Label();
             toolTipChooseDirectory = new ToolTip(components);
@@ -54,6 +61,9 @@
             labelOldNullFilesProcessed = new Label();
             buttonInfo = new Button();
             pictureBoxTdToken = new PictureBox();
+            toolStripMenuItemNullFilesDelete = new ToolStripMenuItem();
+            contextMenuStripOldFilesListBoxContextMenuStrip.SuspendLayout();
+            contextMenuStripNullFilesListBoxContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxTdToken).BeginInit();
             SuspendLayout();
             // 
@@ -77,6 +87,7 @@
             // 
             // listViewOldFiles
             // 
+            listViewOldFiles.ContextMenuStrip = contextMenuStripOldFilesListBoxContextMenuStrip;
             listViewOldFiles.Location = new Point(12, 101);
             listViewOldFiles.Name = "listViewOldFiles";
             listViewOldFiles.Size = new Size(1240, 155);
@@ -85,6 +96,35 @@
             listViewOldFiles.View = View.Details;
             listViewOldFiles.ColumnClick += listViewOldFiles_ColumnClick;
             listViewOldFiles.SelectedIndexChanged += listViewOldFiles_SelectedIndexChanged;
+            listViewOldFiles.MouseDown += listViewOldFiles_MouseDown;
+            // 
+            // contextMenuStripOldFilesListBoxContextMenuStrip
+            // 
+            contextMenuStripOldFilesListBoxContextMenuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItemOldFilesViewWithWindowsDefaultApp, toolStripMenuItemOldFilesViewWithTexteditor, toolStripMenuItemOldFilesDelete });
+            contextMenuStripOldFilesListBoxContextMenuStrip.Name = "contextMenuStripOldFilesListBoxContextMenuStrip";
+            contextMenuStripOldFilesListBoxContextMenuStrip.Size = new Size(243, 70);
+            contextMenuStripOldFilesListBoxContextMenuStrip.Opening += contextMenuStripOldFilesListBoxContextMenuStrip_Opening;
+            contextMenuStripOldFilesListBoxContextMenuStrip.Click += contextMenuStripOldFilesListBoxContextMenuStrip_Click;
+            // 
+            // toolStripMenuItemOldFilesViewWithWindowsDefaultApp
+            // 
+            toolStripMenuItemOldFilesViewWithWindowsDefaultApp.Name = "toolStripMenuItemOldFilesViewWithWindowsDefaultApp";
+            toolStripMenuItemOldFilesViewWithWindowsDefaultApp.Size = new Size(242, 22);
+            toolStripMenuItemOldFilesViewWithWindowsDefaultApp.Text = "View with Windows default App";
+            toolStripMenuItemOldFilesViewWithWindowsDefaultApp.Click += toolStripMenuItemOldFilesViewWithWindowsDefaultApp_Click;
+            // 
+            // toolStripMenuItemOldFilesViewWithTexteditor
+            // 
+            toolStripMenuItemOldFilesViewWithTexteditor.Name = "toolStripMenuItemOldFilesViewWithTexteditor";
+            toolStripMenuItemOldFilesViewWithTexteditor.Size = new Size(242, 22);
+            toolStripMenuItemOldFilesViewWithTexteditor.Text = "View with Texteditor";
+            toolStripMenuItemOldFilesViewWithTexteditor.Click += toolStripMenuItemNullFilesViewWithTexteditor_Click;
+            // 
+            // toolStripMenuItemOldFilesDelete
+            // 
+            toolStripMenuItemOldFilesDelete.Name = "toolStripMenuItemOldFilesDelete";
+            toolStripMenuItemOldFilesDelete.Size = new Size(242, 22);
+            toolStripMenuItemOldFilesDelete.Text = "Delete";
             // 
             // buttonFindTransactionDirectory
             // 
@@ -126,6 +166,7 @@
             // 
             // listViewFilesFilledWithNulls
             // 
+            listViewFilesFilledWithNulls.ContextMenuStrip = contextMenuStripNullFilesListBoxContextMenuStrip;
             listViewFilesFilledWithNulls.Location = new Point(12, 317);
             listViewFilesFilledWithNulls.Name = "listViewFilesFilledWithNulls";
             listViewFilesFilledWithNulls.Size = new Size(1240, 140);
@@ -134,6 +175,28 @@
             listViewFilesFilledWithNulls.View = View.Details;
             listViewFilesFilledWithNulls.ColumnClick += listViewFilesFilledWithNulls_ColumnClick;
             listViewFilesFilledWithNulls.SelectedIndexChanged += listViewOldFilesFilledWithNulls_SelectedIndexChanged;
+            listViewFilesFilledWithNulls.MouseDown += listViewFilesFilledWithNulls_MouseDown;
+            // 
+            // contextMenuStripNullFilesListBoxContextMenuStrip
+            // 
+            contextMenuStripNullFilesListBoxContextMenuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItemNullFilesViewWithWindowsDefaultApp, toolStripMenuItemNullFilesViewWithTexteditor, toolStripMenuItemNullFilesDelete });
+            contextMenuStripNullFilesListBoxContextMenuStrip.Name = "contextMenuStrip1";
+            contextMenuStripNullFilesListBoxContextMenuStrip.Size = new Size(243, 92);
+            contextMenuStripNullFilesListBoxContextMenuStrip.Opening += contextMenuStripNullFilesListBoxContextMenuStrip_Opening;
+            // 
+            // toolStripMenuItemNullFilesViewWithWindowsDefaultApp
+            // 
+            toolStripMenuItemNullFilesViewWithWindowsDefaultApp.Name = "toolStripMenuItemNullFilesViewWithWindowsDefaultApp";
+            toolStripMenuItemNullFilesViewWithWindowsDefaultApp.Size = new Size(242, 22);
+            toolStripMenuItemNullFilesViewWithWindowsDefaultApp.Text = "View with Windows default App";
+            toolStripMenuItemNullFilesViewWithWindowsDefaultApp.Click += toolStripMenuItemNullFilesViewWithWindowsDefaultApp_Click;
+            // 
+            // toolStripMenuItemNullFilesViewWithTexteditor
+            // 
+            toolStripMenuItemNullFilesViewWithTexteditor.Name = "toolStripMenuItemNullFilesViewWithTexteditor";
+            toolStripMenuItemNullFilesViewWithTexteditor.Size = new Size(242, 22);
+            toolStripMenuItemNullFilesViewWithTexteditor.Text = "View with Texteditor";
+            toolStripMenuItemNullFilesViewWithTexteditor.Click += toolStripMenuItemOldFilesViewWithTexteditor_Click;
             // 
             // labelLog
             // 
@@ -268,6 +331,13 @@
             pictureBoxTdToken.TabIndex = 21;
             pictureBoxTdToken.TabStop = false;
             // 
+            // toolStripMenuItemNullFilesDelete
+            // 
+            toolStripMenuItemNullFilesDelete.Name = "toolStripMenuItemNullFilesDelete";
+            toolStripMenuItemNullFilesDelete.Size = new Size(242, 22);
+            toolStripMenuItemNullFilesDelete.Text = "Delete";
+            toolStripMenuItemNullFilesDelete.Click += toolStripMenuItemNullFilesDelete_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -299,6 +369,8 @@
             Name = "MainForm";
             Text = "Transparentdesign Sou.Matrixx Transaction File Checker";
             Load += MainForm_Load;
+            contextMenuStripOldFilesListBoxContextMenuStrip.ResumeLayout(false);
+            contextMenuStripNullFilesListBoxContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBoxTdToken).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -330,5 +402,13 @@
         private Label labelOldNullFilesProcessed;
         private Button buttonInfo;
         private PictureBox pictureBoxTdToken;
+        private ContextMenuStrip contextMenuStripOldFilesListBoxContextMenuStrip;
+        private ToolStripMenuItem toolStripMenuItemOldFilesViewWithWindowsDefaultApp;
+        private ToolStripMenuItem toolStripMenuItemOldFilesViewWithTexteditor;
+        private ToolStripMenuItem toolStripMenuItemOldFilesDelete;
+        private ContextMenuStrip contextMenuStripNullFilesListBoxContextMenuStrip;
+        private ToolStripMenuItem toolStripMenuItemNullFilesViewWithWindowsDefaultApp;
+        private ToolStripMenuItem toolStripMenuItemNullFilesViewWithTexteditor;
+        private ToolStripMenuItem toolStripMenuItemNullFilesDelete;
     }
 }
