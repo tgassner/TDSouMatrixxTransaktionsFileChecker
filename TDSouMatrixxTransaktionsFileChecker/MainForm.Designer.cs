@@ -37,15 +37,18 @@
             contextMenuStripOldFilesListBoxContextMenuStrip = new ContextMenuStrip(components);
             toolStripMenuItemOldFilesViewWithWindowsDefaultApp = new ToolStripMenuItem();
             toolStripMenuItemOldFilesViewWithTexteditor = new ToolStripMenuItem();
+            copyFullPathToClipboardToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItemOldFilesDelete = new ToolStripMenuItem();
             buttonFindTransactionDirectory = new Button();
             textBoxLog = new TextBox();
             label1 = new Label();
             labelNullContainingFiles = new Label();
-            listViewFilesFilledWithNulls = new ListView();
+            listViewFilesContainingNull = new ListView();
             contextMenuStripNullFilesListBoxContextMenuStrip = new ContextMenuStrip(components);
             toolStripMenuItemNullFilesViewWithWindowsDefaultApp = new ToolStripMenuItem();
             toolStripMenuItemNullFilesViewWithTexteditor = new ToolStripMenuItem();
+            toolStripMenuItemNullFilesCopyFullPathToClipboard = new ToolStripMenuItem();
+            toolStripMenuItemNullFilesDelete = new ToolStripMenuItem();
             labelLog = new Label();
             labelTransactionFilesRoot = new Label();
             toolTipChooseDirectory = new ToolTip(components);
@@ -61,7 +64,8 @@
             labelOldNullFilesProcessed = new Label();
             buttonInfo = new Button();
             pictureBoxTdToken = new PictureBox();
-            toolStripMenuItemNullFilesDelete = new ToolStripMenuItem();
+            buttonCopySelectedOldFilesFullPathsToClipboard = new Button();
+            buttonCopySelectedNullFilesFullPathsToClipboard = new Button();
             contextMenuStripOldFilesListBoxContextMenuStrip.SuspendLayout();
             contextMenuStripNullFilesListBoxContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBoxTdToken).BeginInit();
@@ -96,15 +100,15 @@
             listViewOldFiles.View = View.Details;
             listViewOldFiles.ColumnClick += listViewOldFiles_ColumnClick;
             listViewOldFiles.SelectedIndexChanged += listViewOldFiles_SelectedIndexChanged;
+            listViewOldFiles.KeyDown += listViewOldFiles_KeyDown;
             listViewOldFiles.MouseDown += listViewOldFiles_MouseDown;
             // 
             // contextMenuStripOldFilesListBoxContextMenuStrip
             // 
-            contextMenuStripOldFilesListBoxContextMenuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItemOldFilesViewWithWindowsDefaultApp, toolStripMenuItemOldFilesViewWithTexteditor, toolStripMenuItemOldFilesDelete });
+            contextMenuStripOldFilesListBoxContextMenuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItemOldFilesViewWithWindowsDefaultApp, toolStripMenuItemOldFilesViewWithTexteditor, copyFullPathToClipboardToolStripMenuItem, toolStripMenuItemOldFilesDelete });
             contextMenuStripOldFilesListBoxContextMenuStrip.Name = "contextMenuStripOldFilesListBoxContextMenuStrip";
-            contextMenuStripOldFilesListBoxContextMenuStrip.Size = new Size(243, 70);
+            contextMenuStripOldFilesListBoxContextMenuStrip.Size = new Size(243, 92);
             contextMenuStripOldFilesListBoxContextMenuStrip.Opening += contextMenuStripOldFilesListBoxContextMenuStrip_Opening;
-            contextMenuStripOldFilesListBoxContextMenuStrip.Click += contextMenuStripOldFilesListBoxContextMenuStrip_Click;
             // 
             // toolStripMenuItemOldFilesViewWithWindowsDefaultApp
             // 
@@ -120,11 +124,19 @@
             toolStripMenuItemOldFilesViewWithTexteditor.Text = "View with Texteditor";
             toolStripMenuItemOldFilesViewWithTexteditor.Click += toolStripMenuItemNullFilesViewWithTexteditor_Click;
             // 
+            // copyFullPathToClipboardToolStripMenuItem
+            // 
+            copyFullPathToClipboardToolStripMenuItem.Name = "copyFullPathToClipboardToolStripMenuItem";
+            copyFullPathToClipboardToolStripMenuItem.Size = new Size(242, 22);
+            copyFullPathToClipboardToolStripMenuItem.Text = "Copy full Path to Clipboard";
+            copyFullPathToClipboardToolStripMenuItem.Click += copyFullPathToClipboardToolStripMenuItem_Click;
+            // 
             // toolStripMenuItemOldFilesDelete
             // 
             toolStripMenuItemOldFilesDelete.Name = "toolStripMenuItemOldFilesDelete";
             toolStripMenuItemOldFilesDelete.Size = new Size(242, 22);
             toolStripMenuItemOldFilesDelete.Text = "Delete";
+            toolStripMenuItemOldFilesDelete.Click += toolStripMenuItemOldFilesDelete_Click;
             // 
             // buttonFindTransactionDirectory
             // 
@@ -164,22 +176,23 @@
             labelNullContainingFiles.TabIndex = 6;
             labelNullContainingFiles.Text = "NULL containing or empty Files";
             // 
-            // listViewFilesFilledWithNulls
+            // listViewFilesContainingNull
             // 
-            listViewFilesFilledWithNulls.ContextMenuStrip = contextMenuStripNullFilesListBoxContextMenuStrip;
-            listViewFilesFilledWithNulls.Location = new Point(12, 317);
-            listViewFilesFilledWithNulls.Name = "listViewFilesFilledWithNulls";
-            listViewFilesFilledWithNulls.Size = new Size(1240, 140);
-            listViewFilesFilledWithNulls.TabIndex = 7;
-            listViewFilesFilledWithNulls.UseCompatibleStateImageBehavior = false;
-            listViewFilesFilledWithNulls.View = View.Details;
-            listViewFilesFilledWithNulls.ColumnClick += listViewFilesFilledWithNulls_ColumnClick;
-            listViewFilesFilledWithNulls.SelectedIndexChanged += listViewOldFilesFilledWithNulls_SelectedIndexChanged;
-            listViewFilesFilledWithNulls.MouseDown += listViewFilesFilledWithNulls_MouseDown;
+            listViewFilesContainingNull.ContextMenuStrip = contextMenuStripNullFilesListBoxContextMenuStrip;
+            listViewFilesContainingNull.Location = new Point(12, 317);
+            listViewFilesContainingNull.Name = "listViewFilesContainingNull";
+            listViewFilesContainingNull.Size = new Size(1240, 140);
+            listViewFilesContainingNull.TabIndex = 7;
+            listViewFilesContainingNull.UseCompatibleStateImageBehavior = false;
+            listViewFilesContainingNull.View = View.Details;
+            listViewFilesContainingNull.ColumnClick += listViewFilesFilledWithNulls_ColumnClick;
+            listViewFilesContainingNull.SelectedIndexChanged += listViewOldFilesFilledWithNulls_SelectedIndexChanged;
+            listViewFilesContainingNull.KeyDown += listViewFilesContainingNull_KeyDown;
+            listViewFilesContainingNull.MouseDown += listViewFilesFilledWithNulls_MouseDown;
             // 
             // contextMenuStripNullFilesListBoxContextMenuStrip
             // 
-            contextMenuStripNullFilesListBoxContextMenuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItemNullFilesViewWithWindowsDefaultApp, toolStripMenuItemNullFilesViewWithTexteditor, toolStripMenuItemNullFilesDelete });
+            contextMenuStripNullFilesListBoxContextMenuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItemNullFilesViewWithWindowsDefaultApp, toolStripMenuItemNullFilesViewWithTexteditor, toolStripMenuItemNullFilesCopyFullPathToClipboard, toolStripMenuItemNullFilesDelete });
             contextMenuStripNullFilesListBoxContextMenuStrip.Name = "contextMenuStrip1";
             contextMenuStripNullFilesListBoxContextMenuStrip.Size = new Size(243, 92);
             contextMenuStripNullFilesListBoxContextMenuStrip.Opening += contextMenuStripNullFilesListBoxContextMenuStrip_Opening;
@@ -197,6 +210,20 @@
             toolStripMenuItemNullFilesViewWithTexteditor.Size = new Size(242, 22);
             toolStripMenuItemNullFilesViewWithTexteditor.Text = "View with Texteditor";
             toolStripMenuItemNullFilesViewWithTexteditor.Click += toolStripMenuItemOldFilesViewWithTexteditor_Click;
+            // 
+            // toolStripMenuItemNullFilesCopyFullPathToClipboard
+            // 
+            toolStripMenuItemNullFilesCopyFullPathToClipboard.Name = "toolStripMenuItemNullFilesCopyFullPathToClipboard";
+            toolStripMenuItemNullFilesCopyFullPathToClipboard.Size = new Size(242, 22);
+            toolStripMenuItemNullFilesCopyFullPathToClipboard.Text = "Copy full Path to Clipboard";
+            toolStripMenuItemNullFilesCopyFullPathToClipboard.Click += toolStripMenuItemNullFilesCopyFullPathToClipboard_Click;
+            // 
+            // toolStripMenuItemNullFilesDelete
+            // 
+            toolStripMenuItemNullFilesDelete.Name = "toolStripMenuItemNullFilesDelete";
+            toolStripMenuItemNullFilesDelete.Size = new Size(242, 22);
+            toolStripMenuItemNullFilesDelete.Text = "Delete";
+            toolStripMenuItemNullFilesDelete.Click += toolStripMenuItemNullFilesDelete_Click;
             // 
             // labelLog
             // 
@@ -235,7 +262,7 @@
             buttonDeleteSelectedNULLFiles.TabIndex = 11;
             buttonDeleteSelectedNULLFiles.Text = "DELETE seleted NULL containing Files";
             buttonDeleteSelectedNULLFiles.UseVisualStyleBackColor = true;
-            buttonDeleteSelectedNULLFiles.EnabledChanged += buttonDeleteSelectedOldNULLFiles_EnabledChanged;
+            buttonDeleteSelectedNULLFiles.EnabledChanged += buttonDeleteSelectedNullFiles_EnabledChanged;
             buttonDeleteSelectedNULLFiles.Click += buttonDeleteSelectedOldNULLFiles_Click;
             // 
             // buttonCancelSearch
@@ -331,18 +358,33 @@
             pictureBoxTdToken.TabIndex = 21;
             pictureBoxTdToken.TabStop = false;
             // 
-            // toolStripMenuItemNullFilesDelete
+            // buttonCopySelectedOldFilesFullPathsToClipboard
             // 
-            toolStripMenuItemNullFilesDelete.Name = "toolStripMenuItemNullFilesDelete";
-            toolStripMenuItemNullFilesDelete.Size = new Size(242, 22);
-            toolStripMenuItemNullFilesDelete.Text = "Delete";
-            toolStripMenuItemNullFilesDelete.Click += toolStripMenuItemNullFilesDelete_Click;
+            buttonCopySelectedOldFilesFullPathsToClipboard.Location = new Point(268, 262);
+            buttonCopySelectedOldFilesFullPathsToClipboard.Name = "buttonCopySelectedOldFilesFullPathsToClipboard";
+            buttonCopySelectedOldFilesFullPathsToClipboard.Size = new Size(307, 23);
+            buttonCopySelectedOldFilesFullPathsToClipboard.TabIndex = 22;
+            buttonCopySelectedOldFilesFullPathsToClipboard.Text = "Copy full paths of selected Old Files to Clipboard";
+            buttonCopySelectedOldFilesFullPathsToClipboard.UseVisualStyleBackColor = true;
+            buttonCopySelectedOldFilesFullPathsToClipboard.Click += buttonCopySelectedOldFilesFullPathsToClipboard_Click;
+            // 
+            // buttonCopySelectedNullFilesFullPathsToClipboard
+            // 
+            buttonCopySelectedNullFilesFullPathsToClipboard.Location = new Point(268, 463);
+            buttonCopySelectedNullFilesFullPathsToClipboard.Name = "buttonCopySelectedNullFilesFullPathsToClipboard";
+            buttonCopySelectedNullFilesFullPathsToClipboard.Size = new Size(307, 23);
+            buttonCopySelectedNullFilesFullPathsToClipboard.TabIndex = 23;
+            buttonCopySelectedNullFilesFullPathsToClipboard.Text = "Copy full paths of selected Null Files to Clipboard";
+            buttonCopySelectedNullFilesFullPathsToClipboard.UseVisualStyleBackColor = true;
+            buttonCopySelectedNullFilesFullPathsToClipboard.Click += buttonCopySelectedNullFilesFullPathsToClipboard_Click;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 647);
+            Controls.Add(buttonCopySelectedNullFilesFullPathsToClipboard);
+            Controls.Add(buttonCopySelectedOldFilesFullPathsToClipboard);
             Controls.Add(pictureBoxTdToken);
             Controls.Add(buttonInfo);
             Controls.Add(textBoxNullFilesProcessed);
@@ -357,7 +399,7 @@
             Controls.Add(buttonDeleteSelectedOldFiles);
             Controls.Add(labelTransactionFilesRoot);
             Controls.Add(labelLog);
-            Controls.Add(listViewFilesFilledWithNulls);
+            Controls.Add(listViewFilesContainingNull);
             Controls.Add(labelNullContainingFiles);
             Controls.Add(label1);
             Controls.Add(textBoxLog);
@@ -386,7 +428,7 @@
         private TextBox textBoxLog;
         private Label label1;
         private Label labelNullContainingFiles;
-        private ListView listViewFilesFilledWithNulls;
+        private ListView listViewFilesContainingNull;
         private Label labelLog;
         private Label labelTransactionFilesRoot;
         private ToolTip toolTipChooseDirectory;
@@ -410,5 +452,9 @@
         private ToolStripMenuItem toolStripMenuItemNullFilesViewWithWindowsDefaultApp;
         private ToolStripMenuItem toolStripMenuItemNullFilesViewWithTexteditor;
         private ToolStripMenuItem toolStripMenuItemNullFilesDelete;
+        private ToolStripMenuItem copyFullPathToClipboardToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItemNullFilesCopyFullPathToClipboard;
+        private Button buttonCopySelectedOldFilesFullPathsToClipboard;
+        private Button buttonCopySelectedNullFilesFullPathsToClipboard;
     }
 }

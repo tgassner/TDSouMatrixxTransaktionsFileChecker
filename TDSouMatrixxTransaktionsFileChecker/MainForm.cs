@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 using System.Windows.Forms;
 
 namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
@@ -16,10 +18,9 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private SortOrder _sortOrderOldFiles = SortOrder.Ascending;
         private SortOrder _sortOrderNullFiles = SortOrder.Ascending;
 
-        public record FileScanProgress(string Message, int TotalFilesProcessed, int OldFilesProcessed, int NullFilesProcessed);
+        public record FileScanProgress(string Message, int TotalFilesProcessed, int OldFilesProcessed, int NullFilesProcessed, IList<ListViewItem>? OldFileItems, IList<ListViewItem>? NullFileItems);
 
         private CancellationTokenSource? _cts;
-
 
         private void buttonCancelSearch_Click(object sender, EventArgs e)
         {
@@ -30,14 +31,16 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         {
             listViewOldFiles.Items.Clear();
             cleanListViewSortColumn(listViewOldFiles);
-            listViewFilesFilledWithNulls.Items.Clear();
-            cleanListViewSortColumn(listViewFilesFilledWithNulls);
+            listViewFilesContainingNull.Items.Clear();
+            cleanListViewSortColumn(listViewFilesContainingNull);
             textBoxTotalFilesProcessed.Text = "0";
             textBoxOldFilesProcessed.Text = "0";
             textBoxNullFilesProcessed.Text = "0";
             buttonDeleteSelectedOldFiles.Enabled = false;
             buttonDeleteSelectedNULLFiles.Enabled = false;
             buttonFindTransactionDirectory.Enabled = false;
+            buttonCopySelectedOldFilesFullPathsToClipboard.Enabled = false;
+            buttonCopySelectedNullFilesFullPathsToClipboard.Enabled = false;
             progressBarSearch.Visible = true;
 
             string transactionDirectory = textBoxTransactionDirectory.Text;
@@ -56,12 +59,24 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 
             var progress = new Progress<FileScanProgress>(p =>
             {
-                textBoxTotalFilesProcessed.Text = p.TotalFilesProcessed.ToString();
-                textBoxOldFilesProcessed.Text = p.OldFilesProcessed.ToString();
-                textBoxNullFilesProcessed.Text = p.NullFilesProcessed.ToString();
+                textBoxTotalFilesProcessed.Text = p.TotalFilesProcessed >= 0 ? p.TotalFilesProcessed.ToString() : textBoxTotalFilesProcessed.Text;
+                textBoxOldFilesProcessed.Text = p.OldFilesProcessed >= 0 ? p.OldFilesProcessed.ToString() : textBoxOldFilesProcessed.Text;
+                textBoxNullFilesProcessed.Text = p.NullFilesProcessed >= 0 ?p.NullFilesProcessed.ToString() : textBoxNullFilesProcessed.Text;
                 if (!string.IsNullOrWhiteSpace(p.Message))
                 {
                     logToTextBox(p.Message);
+                }
+
+                if (p.OldFileItems != null)
+                {
+                    listViewOldFiles.Items.Clear();
+                    listViewOldFiles.Items.AddRange(p.OldFileItems.ToArray());
+                }
+
+                if (p.NullFileItems != null)
+                {
+                    listViewFilesContainingNull.Items.Clear();
+                    listViewFilesContainingNull.Items.AddRange(p.NullFileItems.ToArray());
                 }
             });
 
@@ -87,6 +102,48 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             }
         }
 
+        public IEnumerable<string> SafeEnumerateFiles(string rootPath, string searchPattern, IProgress<FileScanProgress> progress)
+        {
+            Queue<string> pending = new Queue<string>();
+            pending.Enqueue(rootPath);
+
+            while (pending.Count > 0)
+            {
+                string path = pending.Dequeue();
+
+                // 1. Dateien im aktuellen Verzeichnis abrufen
+                string[] files = null;
+                try
+                {
+                    files = Directory.GetFiles(path, searchPattern);
+                }
+                catch (UnauthorizedAccessException e) {
+                    progress?.Report(new FileScanProgress(e.Message, -1, -1, -1, null, null));
+                    continue; 
+                }
+                catch (DirectoryNotFoundException e) {
+                    progress?.Report(new FileScanProgress(e.Message, -1, -1, -1, null, null));
+                    continue; 
+                }
+
+                foreach (string file in files)
+                {
+                    yield return file;
+                }
+
+                // 2. Unterverzeichnisse zur Warteschlange hinzufügen
+                try
+                {
+                    string[] subs = Directory.GetDirectories(path);
+                    foreach (string sub in subs) pending.Enqueue(sub);
+                }
+                catch (UnauthorizedAccessException e) 
+                {
+                    progress?.Report(new FileScanProgress(e.Message, -1, -1 , -1 , null, null));
+                }
+            }
+        }
+
         private async Task ScanAsync(
             string rootPath,
             IProgress<FileScanProgress> progress,
@@ -99,7 +156,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             IList<ListViewItem> nullFileItems = new List<ListViewItem>();
             Stopwatch sw = Stopwatch.StartNew();
 
-            foreach (string file in Directory.EnumerateFiles(rootPath, "*", SearchOption.AllDirectories))
+            foreach (string file in SafeEnumerateFiles(rootPath, "*", progress)) //Directory.EnumerateFiles(rootPath, "*", SearchOption.AllDirectories))
             {
                 countTotal++;
                 cancellationToken.ThrowIfCancellationRequested();
@@ -158,27 +215,25 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                 }
                 catch (FileNotFoundException e)
                 {
-                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull));
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull, null, null));
                 }
                 catch (IOException e)
                 {
-                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull));
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull, null, null));
                 }
                 catch (UnauthorizedAccessException e)
                 {
-                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull));
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull, null, null));
                 }
                 catch (SecurityException e)
                 {
-                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull));
+                    progress?.Report(new FileScanProgress(e.Message, countTotal, countOld, countNull, null, null));
                 }
 
-                progress?.Report(new FileScanProgress(logStr, countTotal, countOld, countNull));
+                progress?.Report(new FileScanProgress(logStr, countTotal, countOld, countNull, null, null));
             }
 
-            listViewOldFiles.Items.AddRange(oldFileItems.ToArray());
-            listViewFilesFilledWithNulls.Items.AddRange(nullFileItems.ToArray());
-            progress?.Report(new FileScanProgress("Search-Run finished. TotalFiles=" + countTotal + " OldFiles=" + countOld + " Old Files containing at least one binary null=" + countNull + " - " + sw.ElapsedMilliseconds + " ms", countTotal, countOld, countNull));
+            progress?.Report(new FileScanProgress("Search-Run finished. TotalFiles=" + countTotal + " OldFiles=" + countOld + " Old Files containing at least one binary null=" + countNull + " - " + sw.ElapsedMilliseconds + " ms", countTotal, countOld, countNull, oldFileItems, nullFileItems));
         }
 
         public MainForm()
@@ -220,13 +275,15 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 
             listViewOldFiles.Items.Clear();
             cleanListViewSortColumn(listViewOldFiles);
-            listViewFilesFilledWithNulls.Items.Clear();
-            cleanListViewSortColumn(listViewFilesFilledWithNulls);
+            listViewFilesContainingNull.Items.Clear();
+            cleanListViewSortColumn(listViewFilesContainingNull);
             textBoxTotalFilesProcessed.Text = "";
             textBoxOldFilesProcessed.Text = "";
             textBoxNullFilesProcessed.Text = "";
             buttonDeleteSelectedOldFiles.Enabled = false;
             buttonDeleteSelectedNULLFiles.Enabled = false;
+            buttonCopySelectedOldFilesFullPathsToClipboard.Enabled = false;
+            buttonCopySelectedNullFilesFullPathsToClipboard.Enabled = false;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -236,6 +293,8 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             buttonFindSuspiciousTransactions.Enabled = false;
             buttonDeleteSelectedOldFiles.Enabled = false;
             buttonDeleteSelectedNULLFiles.Enabled = false;
+            buttonCopySelectedOldFilesFullPathsToClipboard.Enabled = false;
+            buttonCopySelectedNullFilesFullPathsToClipboard.Enabled = false;
 
             string transactionDirectory = Properties.Settings.Default.transactionDirectory;
             this.textBoxTransactionDirectory.Text = transactionDirectory;
@@ -247,12 +306,12 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             listViewOldFiles.Columns.Add("Creation Date", 100);
             listViewOldFiles.Columns.Add("Path", 350);
 
-            listViewFilesFilledWithNulls.Columns.Clear();
-            listViewFilesFilledWithNulls.Columns.Add("Filename", 250);
-            listViewFilesFilledWithNulls.Columns.Add("Filesize", 50);
-            listViewFilesFilledWithNulls.Columns.Add("Age [Days]", 80);
-            listViewFilesFilledWithNulls.Columns.Add("Creation Date", 150);
-            listViewFilesFilledWithNulls.Columns.Add("Path", 350);
+            listViewFilesContainingNull.Columns.Clear();
+            listViewFilesContainingNull.Columns.Add("Filename", 250);
+            listViewFilesContainingNull.Columns.Add("Filesize", 50);
+            listViewFilesContainingNull.Columns.Add("Age [Days]", 80);
+            listViewFilesContainingNull.Columns.Add("Creation Date", 150);
+            listViewFilesContainingNull.Columns.Add("Path", 350);
         }
 
         private void logToTextBox(string t)
@@ -263,11 +322,13 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private void listViewOldFiles_SelectedIndexChanged(object sender, EventArgs e)
         {
             buttonDeleteSelectedOldFiles.Enabled = listViewOldFiles.SelectedItems.Count > 0;
+            buttonCopySelectedOldFilesFullPathsToClipboard.Enabled = listViewOldFiles.SelectedItems.Count > 0;
         }
 
         private void listViewOldFilesFilledWithNulls_SelectedIndexChanged(object sender, EventArgs e)
         {
-            buttonDeleteSelectedNULLFiles.Enabled = listViewFilesFilledWithNulls.SelectedItems.Count > 0;
+            buttonDeleteSelectedNULLFiles.Enabled = listViewFilesContainingNull.SelectedItems.Count > 0;
+            buttonCopySelectedNullFilesFullPathsToClipboard.Enabled = listViewFilesContainingNull.SelectedItems.Count > 0;
         }
 
         private void buttonDeleteSelectedOldFiles_EnabledChanged(object sender, EventArgs e)
@@ -281,7 +342,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
                 : SystemColors.ControlText;
         }
 
-        private void buttonDeleteSelectedOldNULLFiles_EnabledChanged(object sender, EventArgs e)
+        private void buttonDeleteSelectedNullFiles_EnabledChanged(object sender, EventArgs e)
         {
             buttonDeleteSelectedNULLFiles.BackColor = buttonDeleteSelectedNULLFiles.Enabled
                 ? Color.IndianRed
@@ -295,12 +356,12 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         private void buttonDeleteSelectedOldFiles_Click(object sender, EventArgs e)
         {
             IterateThroughSelectedAndDelete(listViewOldFiles.SelectedItems);
-            CheckAndRemoveNotExistingFiles(listViewFilesFilledWithNulls.Items);
+            CheckAndRemoveNotExistingFiles(listViewFilesContainingNull.Items);
         }
 
         private void buttonDeleteSelectedOldNULLFiles_Click(object sender, EventArgs e)
         {
-            IterateThroughSelectedAndDelete(listViewFilesFilledWithNulls.SelectedItems);
+            IterateThroughSelectedAndDelete(listViewFilesContainingNull.SelectedItems);
             CheckAndRemoveNotExistingFiles(listViewOldFiles.Items);
         }
 
@@ -397,7 +458,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 
         private void listViewFilesFilledWithNulls_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            doSort(e, listViewFilesFilledWithNulls, ref _sortColumnNullFiles, ref _sortOrderNullFiles);
+            doSort(e, listViewFilesContainingNull, ref _sortColumnNullFiles, ref _sortOrderNullFiles);
         }
 
         private void doSort(ColumnClickEventArgs e, ListView listView
@@ -452,11 +513,11 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
         {
             if (e.Button == MouseButtons.Right)
             {
-                var item = listViewFilesFilledWithNulls.GetItemAt(e.X, e.Y);
+                var item = listViewFilesContainingNull.GetItemAt(e.X, e.Y);
 
                 if (item != null)
                 {
-                    listViewFilesFilledWithNulls.SelectedItems.Clear();
+                    listViewFilesContainingNull.SelectedItems.Clear();
                     item.Selected = true;
                 }
             }
@@ -475,7 +536,7 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
 
         private void contextMenuStripNullFilesListBoxContextMenuStrip_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            bool hasSelection = listViewFilesFilledWithNulls.SelectedItems.Count > 0;
+            bool hasSelection = listViewFilesContainingNull.SelectedItems.Count > 0;
 
             if (!hasSelection)
             {
@@ -555,16 +616,121 @@ namespace TransparentDesign.SouMatrixxTransaktionsFileChecker
             }
         }
 
-        private void contextMenuStripOldFilesListBoxContextMenuStrip_Click(object sender, EventArgs e)
+        private void toolStripMenuItemOldFilesDelete_Click(object sender, EventArgs e)
         {
             IterateThroughSelectedAndDelete(listViewOldFiles.SelectedItems);
-            CheckAndRemoveNotExistingFiles(listViewFilesFilledWithNulls.Items);
+            CheckAndRemoveNotExistingFiles(listViewFilesContainingNull.Items);
         }
 
         private void toolStripMenuItemNullFilesDelete_Click(object sender, EventArgs e)
         {
-            IterateThroughSelectedAndDelete(listViewFilesFilledWithNulls.SelectedItems);
+            IterateThroughSelectedAndDelete(listViewFilesContainingNull.SelectedItems);
             CheckAndRemoveNotExistingFiles(listViewOldFiles.Items);
+        }
+
+        private void copyFullPathToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            copyFullPathToClipboard(sender);
+        }
+
+        private void toolStripMenuItemNullFilesCopyFullPathToClipboard_Click(object sender, EventArgs e)
+        {
+            copyFullPathToClipboard(sender);
+        }
+
+        private void copyFullPathToClipboard(object sender)
+        {
+            var menu = ((ToolStripItem)sender).Owner as ContextMenuStrip;
+            var listView = menu?.SourceControl as ListView;
+
+            if (listView == null || listView.SelectedItems.Count == 0)
+                return;
+
+            var item = listView.SelectedItems[0];
+            string? filePath = item.Tag?.ToString();
+
+            if (!string.IsNullOrWhiteSpace(filePath))
+            {
+                try
+                {
+                    Clipboard.SetText(filePath);
+                    logToTextBox("\"" + filePath + "\" copied to Clipboard.");
+                }
+                catch (ExternalException)
+                {
+                    logToTextBox("Could not copy to Clipboard, it is currently used by an other process");
+                }
+            }
+        }
+
+        private void buttonCopySelectedOldFilesFullPathsToClipboard_Click(object sender, EventArgs e)
+        {
+            IterateThroughSelectedAndCopyToClipboar(listViewOldFiles.SelectedItems);
+        }
+
+        private void buttonCopySelectedNullFilesFullPathsToClipboard_Click(object sender, EventArgs e)
+        {
+            IterateThroughSelectedAndCopyToClipboar(listViewFilesContainingNull.SelectedItems);
+        }
+
+        private void IterateThroughSelectedAndCopyToClipboar(ListView.SelectedListViewItemCollection selectedItems)
+        {
+            StringBuilder fileList = new StringBuilder();
+            foreach (ListViewItem item in selectedItems)
+            {
+                if (item != null && item.Tag is string filePath && !string.IsNullOrEmpty(filePath))
+                {
+                    if (new FileInfo(filePath).Exists)
+                    {
+                        fileList.AppendLine(filePath);
+                    }
+                    else
+                    {
+                        fileList.AppendLine("not Existing NOW: " + filePath);
+                    }
+                }
+            }
+
+            try
+            {
+                string list = fileList.ToString();
+                Clipboard.SetText(list);
+                logToTextBox("File Path List copied to Clipboard.");
+            }
+            catch (ExternalException)
+            {
+                logToTextBox("Could not copy to Clipboard, it is currently used by an other process");
+            }
+        }
+
+        private void listViewOldFiles_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.A)
+            {
+                SelectAllItemsInListView(listViewOldFiles);
+
+                // Verhindern, dass das System ein "Ping"-Geräusch macht
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void listViewFilesContainingNull_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.A)
+            {
+                SelectAllItemsInListView(listViewFilesContainingNull);
+
+                // Verhindern, dass das System ein "Ping"-Geräusch macht
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void SelectAllItemsInListView(ListView listView)
+        {
+            foreach (ListViewItem item in listView.Items)
+            {
+                item.Selected = true;
+            }
         }
     }
 }
